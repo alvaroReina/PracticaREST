@@ -1,7 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';

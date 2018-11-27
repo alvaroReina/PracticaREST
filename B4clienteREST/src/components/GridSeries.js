@@ -7,17 +7,39 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import SeriePopover from './SeriePopover'
 
+//To solve the cols for width
+import toRenderProps from 'recompose/toRenderProps';
+import withWidth , {isWidthUp} from '@material-ui/core/withWidth';
+const WithWidth = toRenderProps(withWidth());
+
 
 function GridSeries(props) {
     const { classes, series, currentUser } = props;
 
-    const ncols = 4
-
+    
     return (
-        <div className={classes.root} id="grid-series">
+        <WithWidth> 
+        {({ width }) => {
+            let ncols = 4;            
+            if (isWidthUp('xl', width)){
+                ncols = 6;
+            } else if (isWidthUp('lg', width)) {
+                ncols = 4;
+            } else if (isWidthUp('md', width)) {
+                ncols = 3;
+            } else if (isWidthUp('sm', width)) {
+                ncols = 2;
+            }else if (isWidthUp('xs', width)){
+                ncols = 1;
+            } else {
+                ncols = 4;
+            }
+
+            return (
+            <div className={classes.root} id="grid-series">
             <GridList cellHeight={350} className={classes.gridList} cols={ncols}>
                 <GridListTile key='Subheader' cols={ncols} style={{ height: classes.subHeader.height }}>
-                    <ListSubheader component='div' className={classes.subHeader}>Series</ListSubheader>
+                    <ListSubheader component='div' className={classes.subHeader}>Series {width}</ListSubheader>
                 </GridListTile>
                 {series.map(serie => (
                     <GridListTile key={serie.id}>
@@ -33,6 +55,9 @@ function GridSeries(props) {
                 ))}
             </GridList>
         </div>
+        )}}
+        
+        </WithWidth>    
     )
 }
 
