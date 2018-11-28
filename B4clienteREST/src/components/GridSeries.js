@@ -48,7 +48,7 @@ function GridSeries(props) {
                             title={serie.name}
                             subtitle={<span>by: {serie.author}. Score: {serie.score}</span>}
                             actionIcon={
-                                <SeriePopover serie={serie} isOwner={currentUser===serie.author}/>
+                                <SeriePopover serie={serie} isOwner={currentUser.email ===serie.author}/>
                             }>
                         </GridListTileBar>
                     </GridListTile>
