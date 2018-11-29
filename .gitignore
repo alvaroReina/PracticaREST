@@ -7,3 +7,4 @@ nbdist/
 
 
 node_modules/
+/B4servidorREST/target/
