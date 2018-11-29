@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
  * @author jose
  */
 @Stateless
-@Path("com.iweb.restserver.entity.vinieta")
+@Path("vinietas")
 public class VinietaFacadeREST extends AbstractFacade<Vinieta> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")

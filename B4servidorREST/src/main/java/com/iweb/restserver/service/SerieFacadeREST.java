@@ -6,6 +6,7 @@
 package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Serie;
+import com.iweb.restserver.security.RequireAuthentication;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -18,14 +19,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
  * @author jose
  */
 @Stateless
-@Path("com.iweb.restserver.entity.serie")
+@Path("series")
 public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
@@ -79,7 +82,9 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
+    @RequireAuthentication
+    public String countREST(@Context SecurityContext sc) {
+        System.out.println("Contando con" + sc.getUserPrincipal().getName());
         return String.valueOf(super.count());
     }
 
