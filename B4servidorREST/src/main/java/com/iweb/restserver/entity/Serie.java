@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -33,9 +35,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Serie.findAll", query = "SELECT s FROM Serie s")
     , @NamedQuery(name = "Serie.findById", query = "SELECT s FROM Serie s WHERE s.id = :id")
-    , @NamedQuery(name = "Serie.findByNombre", query = "SELECT s FROM Serie s WHERE s.nombre = :nombre")
-    , @NamedQuery(name = "Serie.findByPuntuacion", query = "SELECT s FROM Serie s WHERE s.puntuacion = :puntuacion")
-    , @NamedQuery(name = "Serie.findByAutor", query = "SELECT s FROM Serie s WHERE s.autor = :autor")})
+    , @NamedQuery(name = "Serie.findByTitle", query = "SELECT s FROM Serie s WHERE s.title = :title")
+    , @NamedQuery(name = "Serie.findByScore", query = "SELECT s FROM Serie s WHERE s.score = :score")
+    , @NamedQuery(name = "Serie.findByViews", query = "SELECT s FROM Serie s WHERE s.views = :views")})
 public class Serie implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,17 +49,17 @@ public class Serie implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
-    @Column(name = "NOMBRE")
-    private String nombre;
-    @Column(name = "PUNTUACION")
-    private Integer puntuacion;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "AUTOR")
-    private String autor;
+    @Column(name = "TITLE")
+    private String title;
+    @Column(name = "SCORE")
+    private Integer score;
+    @Column(name = "VIEWS")
+    private Integer views;
+    @JoinColumn(name = "AUTHOR", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Userinfo author;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie")
-    private Collection<Vinieta> vinietaCollection;
+    private Collection<Sketch> sketchCollection;
 
     public Serie() {
     }
@@ -66,10 +68,9 @@ public class Serie implements Serializable {
         this.id = id;
     }
 
-    public Serie(Integer id, String nombre, String autor) {
+    public Serie(Integer id, String title) {
         this.id = id;
-        this.nombre = nombre;
-        this.autor = autor;
+        this.title = title;
     }
 
     public Integer getId() {
@@ -80,37 +81,45 @@ public class Serie implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getTitle() {
+        return title;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Integer getPuntuacion() {
-        return puntuacion;
+    public Integer getScore() {
+        return score;
     }
 
-    public void setPuntuacion(Integer puntuacion) {
-        this.puntuacion = puntuacion;
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
-    public String getAutor() {
-        return autor;
+    public Integer getViews() {
+        return views;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setViews(Integer views) {
+        this.views = views;
+    }
+
+    public Userinfo getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Userinfo author) {
+        this.author = author;
     }
 
     @XmlTransient
-    public Collection<Vinieta> getVinietaCollection() {
-        return vinietaCollection;
+    public Collection<Sketch> getSketchCollection() {
+        return sketchCollection;
     }
 
-    public void setVinietaCollection(Collection<Vinieta> vinietaCollection) {
-        this.vinietaCollection = vinietaCollection;
+    public void setSketchCollection(Collection<Sketch> sketchCollection) {
+        this.sketchCollection = sketchCollection;
     }
 
     @Override

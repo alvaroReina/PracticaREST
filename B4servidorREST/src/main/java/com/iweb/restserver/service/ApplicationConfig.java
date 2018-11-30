@@ -32,7 +32,8 @@ public class ApplicationConfig extends Application {
         resources.add(com.iweb.restserver.config.CORSFilter.class);
         resources.add(com.iweb.restserver.security.AuthenticationFilter.class);
         resources.add(com.iweb.restserver.service.SerieFacadeREST.class);
-        resources.add(com.iweb.restserver.service.VinietaFacadeREST.class);
+        resources.add(com.iweb.restserver.service.SketchFacadeREST.class);
+        resources.add(com.iweb.restserver.service.UserinfoFacadeREST.class);
     }
     
 }

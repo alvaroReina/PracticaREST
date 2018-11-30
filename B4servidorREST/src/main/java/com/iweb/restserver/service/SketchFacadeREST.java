@@ -5,7 +5,7 @@
  */
 package com.iweb.restserver.service;
 
-import com.iweb.restserver.entity.Vinieta;
+import com.iweb.restserver.entity.Sketch;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -25,27 +25,27 @@ import javax.ws.rs.core.MediaType;
  * @author jose
  */
 @Stateless
-@Path("vinietas")
-public class VinietaFacadeREST extends AbstractFacade<Vinieta> {
+@Path("com.iweb.restserver.entity.sketch")
+public class SketchFacadeREST extends AbstractFacade<Sketch> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
-    public VinietaFacadeREST() {
-        super(Vinieta.class);
+    public SketchFacadeREST() {
+        super(Sketch.class);
     }
 
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Vinieta entity) {
+    public void create(Sketch entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Vinieta entity) {
+    public void edit(@PathParam("id") Integer id, Sketch entity) {
         super.edit(entity);
     }
 
@@ -58,21 +58,21 @@ public class VinietaFacadeREST extends AbstractFacade<Vinieta> {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Vinieta find(@PathParam("id") Integer id) {
+    public Sketch find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Vinieta> findAll() {
+    public List<Sketch> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Vinieta> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+    public List<Sketch> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
 

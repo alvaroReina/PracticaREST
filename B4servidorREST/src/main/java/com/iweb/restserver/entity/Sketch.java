@@ -29,15 +29,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author jose
  */
 @Entity
-@Table(name = "VINIETA")
+@Table(name = "SKETCH")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Vinieta.findAll", query = "SELECT v FROM Vinieta v")
-    , @NamedQuery(name = "Vinieta.findById", query = "SELECT v FROM Vinieta v WHERE v.id = :id")
-    , @NamedQuery(name = "Vinieta.findByNombre", query = "SELECT v FROM Vinieta v WHERE v.nombre = :nombre")
-    , @NamedQuery(name = "Vinieta.findByFecha", query = "SELECT v FROM Vinieta v WHERE v.fecha = :fecha")
-    , @NamedQuery(name = "Vinieta.findByPuntuacion", query = "SELECT v FROM Vinieta v WHERE v.puntuacion = :puntuacion")})
-public class Vinieta implements Serializable {
+    @NamedQuery(name = "Sketch.findAll", query = "SELECT s FROM Sketch s")
+    , @NamedQuery(name = "Sketch.findById", query = "SELECT s FROM Sketch s WHERE s.id = :id")
+    , @NamedQuery(name = "Sketch.findByTitle", query = "SELECT s FROM Sketch s WHERE s.title = :title")
+    , @NamedQuery(name = "Sketch.findByCreatedat", query = "SELECT s FROM Sketch s WHERE s.createdat = :createdat")
+    , @NamedQuery(name = "Sketch.findByScore", query = "SELECT s FROM Sketch s WHERE s.score = :score")})
+public class Sketch implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,27 +48,27 @@ public class Vinieta implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
-    @Column(name = "NOMBRE")
-    private String nombre;
-    @Column(name = "FECHA")
+    @Column(name = "TITLE")
+    private String title;
+    @Column(name = "CREATEDAT")
     @Temporal(TemporalType.DATE)
-    private Date fecha;
-    @Column(name = "PUNTUACION")
-    private Integer puntuacion;
+    private Date createdat;
+    @Column(name = "SCORE")
+    private Integer score;
     @JoinColumn(name = "IDSERIE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Serie idserie;
 
-    public Vinieta() {
+    public Sketch() {
     }
 
-    public Vinieta(Integer id) {
+    public Sketch(Integer id) {
         this.id = id;
     }
 
-    public Vinieta(Integer id, String nombre) {
+    public Sketch(Integer id, String title) {
         this.id = id;
-        this.nombre = nombre;
+        this.title = title;
     }
 
     public Integer getId() {
@@ -79,28 +79,28 @@ public class Vinieta implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getTitle() {
+        return title;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public Date getCreatedat() {
+        return createdat;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    public void setCreatedat(Date createdat) {
+        this.createdat = createdat;
     }
 
-    public Integer getPuntuacion() {
-        return puntuacion;
+    public Integer getScore() {
+        return score;
     }
 
-    public void setPuntuacion(Integer puntuacion) {
-        this.puntuacion = puntuacion;
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
     public Serie getIdserie() {
@@ -121,10 +121,10 @@ public class Vinieta implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Vinieta)) {
+        if (!(object instanceof Sketch)) {
             return false;
         }
-        Vinieta other = (Vinieta) object;
+        Sketch other = (Sketch) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -133,7 +133,7 @@ public class Vinieta implements Serializable {
 
     @Override
     public String toString() {
-        return "com.iweb.restserver.entity.Vinieta[ id=" + id + " ]";
+        return "com.iweb.restserver.entity.Sketch[ id=" + id + " ]";
     }
     
 }
