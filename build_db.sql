@@ -18,6 +18,7 @@ id integer not null generated always as identity,
 title varchar (50) not null, 
 score integer default 0,
 author integer not null,
+views integer default 0,
 FOREIGN KEY (author) REFERENCES UserInfo(id),
 CONSTRAINT Serie_pk PRIMARY KEY (id)
 );
@@ -151,3 +152,4 @@ INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Slim Shady', (SEL
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Eminem', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.2.2018', 8);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Demminem', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.3.2018', 3);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('SumUP', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.4.2018', 1);
+
