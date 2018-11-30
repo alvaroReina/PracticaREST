@@ -82,7 +82,28 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    @GET
+    @Path("top")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> topScore() {
+        return null;
+    }
 
+    @GET
+    @Path("latest")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> latest() {
+        return null;
+    }
+
+    @GET
+    @Path("betweendates")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
+        return null;
+    }
     @Override
     protected EntityManager getEntityManager() {
         return em;
