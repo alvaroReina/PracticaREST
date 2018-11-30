@@ -8,3 +8,4 @@ nbdist/
 
 node_modules/
 /B4servidorREST/target/
+B4servidorREST/src/main/java/com/iweb/restserver/security/secret/
