@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package service;
+package com.iweb.restserver.service;
 
-import entity.Serie;
+import com.iweb.restserver.entity.Serie;
+import com.iweb.restserver.entity.Sketch;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -18,17 +19,18 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Alvaro
+ * @author jose
  */
 @Stateless
-@Path("serie")
+@Path("series")
 public class SerieFacadeREST extends AbstractFacade<Serie> {
 
-    @PersistenceContext(unitName = "B4servidorRESTPU")
+    @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
     public SerieFacadeREST() {
@@ -70,22 +72,46 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     }
 
     @GET
-    @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Serie> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
     }
 
+    @GET
+    @Path("top")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Serie> topScore() {
+        return null;
+    }
+
+    @GET
+    @Path("mostviewed")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Serie> mostViewed() {
+        return null;
+    }
+
+    @GET
+    @Path("search")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Serie> searchWithFilter(@QueryParam("title") String title,
+            @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
+        return null;
+    }
+
+    @GET
+    @Path("{id}/sketches")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> getSerieSketches(@PathParam("id") Integer serieID) {
+        return null;
+    }
+    
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

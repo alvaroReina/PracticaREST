@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package service;
+package com.iweb.restserver.service;
 
-import entity.Sketch;
+import com.iweb.restserver.entity.Sketch;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -18,17 +18,18 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Alvaro
+ * @author jose
  */
 @Stateless
-@Path("sketch")
+@Path("sketches")
 public class SketchFacadeREST extends AbstractFacade<Sketch> {
 
-    @PersistenceContext(unitName = "B4servidorRESTPU")
+    @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
     public SketchFacadeREST() {
@@ -82,7 +83,28 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    @GET
+    @Path("top")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> topScore() {
+        return null;
+    }
 
+    @GET
+    @Path("latest")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> latest() {
+        return null;
+    }
+
+    @GET
+    @Path("betweendates")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<Sketch> findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
+        return null;
+    }
     @Override
     protected EntityManager getEntityManager() {
         return em;
