@@ -6,11 +6,11 @@ drop table UserInfo;
 -- Create tables
 -----------------------
 create table UserInfo (
-id integer not null,
+id integer not null generated always as identity (START WITH 1, INCREMENT BY 1),
 name varchar(200) not null,
 email varchar(256) unique not null,
 role varchar(16) default 'USER',
-picture varchar(256) default 'assets/img/incongnito.png'
+picture varchar(256) default 'assets/img/incongnito.png',
 CONSTRAINT UserInfo_pk PRIMARY KEY (id)
 );
 
@@ -38,14 +38,57 @@ FOREIGN KEY (idserie) REFERENCES Serie(id) ON DELETE CASCADE
 ----------------------
 -- Create users info
 ----------------------
-INSERT INTO UserInfo(id, name, email, role) VALUES (10, 'Thomas Smith', 'thomas_shmith@gmail.com', 'USER');
-INSERT INTO UserInfo(id, name, email, role) VALUES (11, 'admin', 'admin', 'ADMIN');
-INSERT INTO UserInfo(id, name, email, role) VALUES (12, 'Anne Watson', 'aw@outlook.com', 'USER');
+INSERT INTO UserInfo(name, email) VALUES ('Ibañez', 'ibanyez@system.web');
+INSERT INTO UserInfo(name, email) VALUES ('Marvel', 'marvel@system.web');
+INSERT INTO UserInfo(name, email) VALUES ('Sabías que...','diduknow@system.web');
+INSERT INTO UserInfo(name, email) VALUES ('J.K. Rowling','jkrowling@system.web');
+INSERT INTO UserInfo(name, email) VALUES ('Dr. DRE','forget@about.dre');
+INSERT INTO UserInfo(name, email) VALUES ('Thomas Smith', 'thomas_shmith@gmail.com');
+INSERT INTO UserInfo(name, email) VALUES ('Anne Watson', 'aw@outlook.com');
+
+----------------------
+-- Admin Account
+----------------------
+INSERT INTO UserInfo(name, email, role) VALUES ('administrador', 'pruebaparaingweb@gmail.com', 'ADMIN');
+INSERT INTO UserInfo(name, email, role) VALUES ('B4 Iweb', ' b4ingenieriaweb@gmail.com', 'ADMIN');
+----------------------
+-- Create some series for administrador
+----------------------
+INSERT INTO Serie(title, score, author) VALUES ('Professor X', 10, 8);
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #1', (SELECT id FROM Serie WHERE title='Professor X'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #2', (SELECT id FROM Serie WHERE title='Professor X'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #3', (SELECT id FROM Serie WHERE title='Professor X'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #4', (SELECT id FROM Serie WHERE title='Professor X'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #5', (SELECT id FROM Serie WHERE title='Professor X'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #6', (SELECT id FROM Serie WHERE title='Professor X'));
+
+INSERT INTO Serie(title, score, author) VALUES ('Acontecimientos memorables', 9, 8);
+INSERT INTO Sketch(title, idserie) VALUES ('Caída de Constantinopla', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('Caída de Estambul', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('Primer hombre en el espacio', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('Primer hombre en la Luna', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('La estación espacial internacional', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('Aterrizaje en Marte', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('Nacimiento Netscape', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('La era del web', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('La era de las apps', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+INSERT INTO Sketch(title, idserie) VALUES ('La era de las APIs', (SELECT id FROM Serie WHERE title='Acontecimientos memorables'));
+
+----------------------
+-- Create some series for cuenta pruebas
+----------------------
+INSERT INTO Serie(title, score, author) VALUES ('Cuentos populares', 10, 9);
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #1', (SELECT id FROM Serie WHERE title='Cuentos populares'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #2', (SELECT id FROM Serie WHERE title='Cuentos populares'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #3', (SELECT id FROM Serie WHERE title='Cuentos populares'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #4', (SELECT id FROM Serie WHERE title='Cuentos populares'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #5', (SELECT id FROM Serie WHERE title='Cuentos populares'));
+INSERT INTO Sketch(title, idserie) VALUES ('Tomo #6', (SELECT id FROM Serie WHERE title='Cuentos populares'));
 
 ---------------------------------------------------------
 -- Create Serie 'La familia Trapisonda' and its Sketches
 ---------------------------------------------------------
-INSERT INTO Serie (title, score, author)VALUES ('La familia Trapisonda', 5, 10);
+INSERT INTO Serie (title, score, author) VALUES ('La familia Trapisonda', 5, 1);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-0', (SELECT id FROM Serie WHERE title ='La familia Trapisonda'), '1.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-1', (SELECT id FROM Serie WHERE title ='La familia Trapisonda'), '2.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-2', (SELECT id FROM Serie WHERE title ='La familia Trapisonda'), '3.10.1980');
@@ -53,7 +96,10 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-3', (SELECT id F
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-4', (SELECT id FROM Serie WHERE title ='La familia Trapisonda'), '5.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-5', (SELECT id FROM Serie WHERE title ='La familia Trapisonda'), '6.10.1980');
 
-INSERT INTO  Serie (title, score, author) VALUES ('Mortadelo y Filemon', 9, 10);
+---------------------------------------------------------
+-- Create Serie 'Mortadelo y Filemon' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Mortadelo y Filemon', 9, 1);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-1', (SELECT id FROM Serie WHERE title ='Mortadelo y Filemon'), '7.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-2', (SELECT id FROM Serie WHERE title ='Mortadelo y Filemon'), '8.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-3', (SELECT id FROM Serie WHERE title ='Mortadelo y Filemon'), '9.10.1980');
@@ -70,7 +116,10 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-13', (SELECT id 
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-14', (SELECT id FROM Serie WHERE title ='Mortadelo y Filemon'), '20.10.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Especial navidad', (SELECT id FROM Serie WHERE title ='Mortadelo y Filemon'), '21.10.1980');
 
-INSERT INTO  Serie (title, score, author) VALUES ('Rompetechos', 6, 10);
+---------------------------------------------------------
+-- Create Serie 'Rompetechos' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Rompetechos', 6, 1);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-6', (SELECT id FROM Serie WHERE title ='Rompetechos'), '1.01.1990');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-9', (SELECT id FROM Serie WHERE title ='Rompetechos'), '1.02.1990');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-12', (SELECT id FROM Serie WHERE title ='Rompetechos'), '1.03.1990');
@@ -78,7 +127,10 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-15', (SELECT id 
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-18', (SELECT id FROM Serie WHERE title ='Rompetechos'), '1.05.1990');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Entrega-21', (SELECT id FROM Serie WHERE title ='Rompetechos'), '1.06.1990');
 
-INSERT INTO  Serie (title, score, author) VALUES ('Los cuatro fantasticos', 6, 10);
+---------------------------------------------------------
+-- Create Serie 'Los cuatro fantasticos' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Los cuatro fantasticos', 6, 2);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-0', (SELECT id FROM Serie WHERE title ='Los cuatro fantasticos'), '1.06.2004');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-1', (SELECT id FROM Serie WHERE title ='Los cuatro fantasticos'), '1.07.2004');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-2', (SELECT id FROM Serie WHERE title ='Los cuatro fantasticos'), '1.08.2004');
@@ -86,8 +138,10 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-3', (SELECT id FROM S
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-4', (SELECT id FROM Serie WHERE title ='Los cuatro fantasticos'), '1.10.2004');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No-5', (SELECT id FROM Serie WHERE title ='Los cuatro fantasticos'), '1.11.2004');
 
-
-INSERT INTO  Serie (title, score, author) VALUES ('El asombroso Spiderman', 10, 10);
+---------------------------------------------------------
+-- Create Serie 'El asombroso Spiderman' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('El asombroso Spiderman', 10, 2);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-1', (SELECT id FROM Serie WHERE title ='El asombroso Spiderman'), '01.12.1980');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-2', (SELECT id FROM Serie WHERE title ='El asombroso Spiderman'), '01.12.1981');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-3', (SELECT id FROM Serie WHERE title ='El asombroso Spiderman'), '01.12.1982');
@@ -98,7 +152,10 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-7', (SELECT id FROM Se
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-8', (SELECT id FROM Serie WHERE title ='El asombroso Spiderman'), '01.12.1987');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('#-9', (SELECT id FROM Serie WHERE title ='El asombroso Spiderman'), '01.12.1988');
 
-INSERT INTO  Serie (title, score, author) VALUES ('El espectacular Spiderman', 8, 10);
+---------------------------------------------------------
+-- Create Serie 'El espectacular Spiderman' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('El espectacular Spiderman', 8, 2);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.10', (SELECT id FROM Serie WHERE title ='El espectacular Spiderman'), '01.12.1989');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.11', (SELECT id FROM Serie WHERE title ='El espectacular Spiderman'), '01.12.1990');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.12', (SELECT id FROM Serie WHERE title ='El espectacular Spiderman'), '01.12.1991');
@@ -112,13 +169,19 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.19', (SELECT id FROM 
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.20', (SELECT id FROM Serie WHERE title ='El espectacular Spiderman'), '01.12.1999');
 
 
-INSERT INTO  Serie (title, score, author) VALUES ('Civil War', 6, 10);
+---------------------------------------------------------
+-- Create Serie 'Civil War' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Civil War', 6, 2);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Edicion original', (SELECT id FROM Serie WHERE title ='Civil War'), '01.02.1985');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Edicion remasterizada', (SELECT id FROM Serie WHERE title ='Civil War'), '01.02.2014');
 -- Current date
 INSERT INTO Sketch (title, idserie) VALUES ('Edicion coleccionista', (SELECT id FROM Serie WHERE title ='Civil War'));
 
-INSERT INTO  Serie (title, score, author) VALUES ('El Spiderman que parece no dormir nunca', 3, 10);
+---------------------------------------------------------
+-- Create Serie 'El Spiderman que parece no dormir nunca' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('El Spiderman que parece no dormir nunca', 3, 2);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.20', (SELECT id FROM Serie WHERE title ='El Spiderman que parece no dormir nunca'), '13.05.2003');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.21', (SELECT id FROM Serie WHERE title ='El Spiderman que parece no dormir nunca'), '13.05.2004');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.22', (SELECT id FROM Serie WHERE title ='El Spiderman que parece no dormir nunca'), '13.05.2005');
@@ -130,16 +193,19 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.27', (SELECT id FROM 
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.28', (SELECT id FROM Serie WHERE title ='El Spiderman que parece no dormir nunca'), '13.05.2011');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('No.29', (SELECT id FROM Serie WHERE title ='El Spiderman que parece no dormir nunca'), '13.05.2012');
 
-
-INSERT INTO  Serie (title, score, author) VALUES ('Fiestas alrededor del mundo', 5, 10);
+---------------------------------------------------------
+-- Create Serie 'La familia Trapisonda' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Fiestas alrededor del mundo', 5, 3);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Navidad', (SELECT id FROM Serie WHERE title ='Fiestas alrededor del mundo'), '27.4.2015');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Pascua', (SELECT id FROM Serie WHERE title ='Fiestas alrededor del mundo'), '27.4.2016');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Hanuka', (SELECT id FROM Serie WHERE title ='Fiestas alrededor del mundo'), '27.4.2017');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Kwanzaa', (SELECT id FROM Serie WHERE title ='Fiestas alrededor del mundo'), '27.4.2018');
 
-
-/**/
-INSERT INTO  Serie (title, score, author) VALUES ('Harry Potter, el manga', 5, 10);
+---------------------------------------------------------
+-- Create Serie 'Harry Potter, el manga' and its Sketches
+---------------------------------------------------------
+INSERT INTO  Serie (title, score, author) VALUES ('Harry Potter, el manga', 5, 4);
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Harry Potter y la Piedra Filosofal', (SELECT id FROM Serie WHERE title ='Harry Potter, el manga'), '01.09.2013');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Harry Potter y la Camara Secreta', (SELECT id FROM Serie WHERE title ='Harry Potter, el manga'), '01.09.2014');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Harry Potter y el prisionero de Azkaban', (SELECT id FROM Serie WHERE title ='Harry Potter, el manga'), '01.09.2015');
@@ -149,9 +215,11 @@ INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Harry Potter y el mister
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Harry Potter y las reliquias de la muerte', (SELECT id FROM Serie WHERE title ='Harry Potter, el manga'), '01.09.2019');
 INSERT INTO Sketch (title, idserie, createdAt) VALUES ('Animales fantasticos y donde encontrarlos', (SELECT id FROM Serie WHERE title ='Harry Potter, el manga'), '01.09.2020');
 
-INSERT INTO Serie (title, score, author) VALUES ('The Slim Shady Show', 6, 10);
+---------------------------------------------------------
+-- Create Serie 'The Slim Shady Show' and its Sketches
+---------------------------------------------------------
+INSERT INTO Serie (title, score, author) VALUES ('The Slim Shady Show', 6, 5);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Slim Shady', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.1.2018', 10);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Eminem', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.2.2018', 8);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('Demminem', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.3.2018', 3);
 INSERT INTO Sketch (title, idserie, createdAt, score) VALUES ('SumUP', (SELECT id FROM Serie WHERE title ='The Slim Shady Show'), '01.4.2018', 1);
-
