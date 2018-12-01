@@ -7,5 +7,7 @@ nbdist/
 
 
 node_modules/
+B4clienteREST/yarn\.lock
+
 /B4servidorREST/target/
 B4servidorREST/src/main/java/com/iweb/restserver/security/secret/
