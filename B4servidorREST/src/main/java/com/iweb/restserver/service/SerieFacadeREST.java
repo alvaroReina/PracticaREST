@@ -27,7 +27,7 @@ import javax.ws.rs.core.MediaType;
  * @author jose
  */
 @Stateless
-@Path("com.iweb.restserver.entity.serie")
+@Path("series")
 public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")

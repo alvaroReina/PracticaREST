@@ -37,34 +37,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             return;
         }
         
-        requestContext.setSecurityContext(new SecurityContext() {
-            @Override
-            public Principal getUserPrincipal() {
-                return new Principal() {
-                    @Override
-                    public String getName() {
-                        return "Fido";
-                    }
-                };    
-            }
-
-            @Override
-            public boolean isUserInRole(String role) {
-                return false;
-            }
-
-            @Override
-            public boolean isSecure() {
-                return false;
-            }
-
-            @Override
-            public String getAuthenticationScheme() {
-                return "OAuth 2.0";
-            }
-        });
-
-        System.out.println("EminemEEEEEMINEM");
+        /*
+            TODO
+        */
+        System.out.println("El filtro ha pasado esta request, pero no comprueba nada!");
     }
     
 }

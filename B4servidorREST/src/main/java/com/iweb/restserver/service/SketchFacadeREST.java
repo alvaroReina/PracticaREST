@@ -18,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -25,7 +26,7 @@ import javax.ws.rs.core.MediaType;
  * @author jose
  */
 @Stateless
-@Path("com.iweb.restserver.entity.sketch")
+@Path("sketches")
 public class SketchFacadeREST extends AbstractFacade<Sketch> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
