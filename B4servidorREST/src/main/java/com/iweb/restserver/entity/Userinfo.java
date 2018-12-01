@@ -56,6 +56,10 @@ public class Userinfo implements Serializable {
     @Size(max = 16)
     @Column(name = "ROLE")
     private String role;
+    @Size(max = 256)
+    @Column(name = "picture")
+    private String picture;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private Collection<Serie> serieCollection;
 
@@ -104,6 +108,16 @@ public class Userinfo implements Serializable {
         this.role = role;
     }
 
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    
+    
     @XmlTransient
     public Collection<Serie> getSerieCollection() {
         return serieCollection;
