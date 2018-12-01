@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package service;
+package com.iweb.restserver.service;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
@@ -12,7 +12,7 @@ import javax.ws.rs.core.Application;
  *
  * @author Alvaro
  */
-@javax.ws.rs.ApplicationPath("webresources")
+@javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends Application {
 
     @Override
@@ -29,9 +29,11 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(config.CrossOriginResourceSharingFilter.class);
-        resources.add(service.SerieFacadeREST.class);
-        resources.add(service.SketchFacadeREST.class);
+        resources.add(com.iweb.restserver.config.CORSFilter.class);
+        resources.add(com.iweb.restserver.security.AuthenticationFilter.class);
+        resources.add(com.iweb.restserver.service.SerieFacadeREST.class);
+        resources.add(com.iweb.restserver.service.SketchFacadeREST.class);
+        resources.add(com.iweb.restserver.service.UserinfoFacadeREST.class);
     }
     
 }

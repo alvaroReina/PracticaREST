@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entity;
+package com.iweb.restserver.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Alvaro
+ * @author jose
  */
 @Entity
 @Table(name = "SKETCH")
@@ -34,8 +34,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Sketch.findAll", query = "SELECT s FROM Sketch s")
     , @NamedQuery(name = "Sketch.findById", query = "SELECT s FROM Sketch s WHERE s.id = :id")
-    , @NamedQuery(name = "Sketch.findByNombre", query = "SELECT s FROM Sketch s WHERE s.nombre = :nombre")
-    , @NamedQuery(name = "Sketch.findByFecha", query = "SELECT s FROM Sketch s WHERE s.fecha = :fecha")})
+    , @NamedQuery(name = "Sketch.findByTitle", query = "SELECT s FROM Sketch s WHERE s.title = :title")
+    , @NamedQuery(name = "Sketch.findByCreatedat", query = "SELECT s FROM Sketch s WHERE s.createdat = :createdat")
+    , @NamedQuery(name = "Sketch.findByScore", query = "SELECT s FROM Sketch s WHERE s.score = :score")})
 public class Sketch implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,15 +48,20 @@ public class Sketch implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
-    @Column(name = "NOMBRE")
-    private String nombre;
-    @Column(name = "FECHA")
+    @Column(name = "TITLE")
+    private String title;
+    @Column(name = "CREATEDAT")
     @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private Date createdat;
+    @Column(name = "SCORE")
+    private Integer score;
     @JoinColumn(name = "IDSERIE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Serie idserie;
-
+    @Size(max = 256)
+    @Column(name = "picture")
+    private String picture;
+    
     public Sketch() {
     }
 
@@ -63,9 +69,9 @@ public class Sketch implements Serializable {
         this.id = id;
     }
 
-    public Sketch(Integer id, String nombre) {
+    public Sketch(Integer id, String title) {
         this.id = id;
-        this.nombre = nombre;
+        this.title = title;
     }
 
     public Integer getId() {
@@ -76,20 +82,28 @@ public class Sketch implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getTitle() {
+        return title;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Date getFecha() {
-        return fecha;
+    public Date getCreatedat() {
+        return createdat;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    public void setCreatedat(Date createdat) {
+        this.createdat = createdat;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
     public Serie getIdserie() {
@@ -98,6 +112,14 @@ public class Sketch implements Serializable {
 
     public void setIdserie(Serie idserie) {
         this.idserie = idserie;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     @Override
@@ -122,7 +144,7 @@ public class Sketch implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Sketch[ id=" + id + " ]";
+        return "com.iweb.restserver.entity.Sketch[ id=" + id + " ]";
     }
     
 }
