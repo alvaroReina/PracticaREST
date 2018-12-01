@@ -10,6 +10,7 @@ id integer not null,
 name varchar(200) not null,
 email varchar(256) unique not null,
 role varchar(16) default 'USER',
+picture varchar(256) default 'assets/img/incongnito.png'
 CONSTRAINT UserInfo_pk PRIMARY KEY (id)
 );
 
@@ -19,6 +20,7 @@ title varchar (50) not null,
 score integer default 0,
 author integer not null,
 views integer default 0,
+picture varchar(256) default 'assets/img/not-found.jpg',
 FOREIGN KEY (author) REFERENCES UserInfo(id),
 CONSTRAINT Serie_pk PRIMARY KEY (id)
 );
