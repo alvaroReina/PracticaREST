@@ -40,13 +40,18 @@
             <version>1.25.0</version>
         </dependency>
         
-        <!-- Librería para firma y verificación de JWT-->
+        <!-- Librería para firma y verificación de JWT
         <dependency> 
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>3.3.0</version>
+            <version>3.4.1</version>
         </dependency>
-        
+        -->
+        <dependency>
+            <groupId>io.fusionauth</groupId>
+            <artifactId>fusionauth-jwt</artifactId>
+            <version>2.1.1</version>
+        </dependency>
     </dependencies>
 
     <build>

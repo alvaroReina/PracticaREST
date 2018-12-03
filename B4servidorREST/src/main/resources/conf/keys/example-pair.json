@@ -1,0 +1,6 @@
+{
+    "alg": "EC256",
+    "sign": "this key is secret",
+    "veriy": "this key is for verification",
+    "kid": "shared auth token"
+}

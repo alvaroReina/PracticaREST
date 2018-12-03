@@ -1,0 +1,5 @@
+{
+    "alg": "HS256",
+    "sign": "this key is secret",
+    "kid": "authorization tokens not shared"
+}
