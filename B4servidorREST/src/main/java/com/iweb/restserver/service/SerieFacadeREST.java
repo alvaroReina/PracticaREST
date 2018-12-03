@@ -111,9 +111,10 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("{id}/sketches")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> getSerieSketches(@PathParam("id") Integer serieID) {
-        return null;
+        Query q =em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
+        q.setParameter("serieID", serieID);
+        return q.getResultList();
     }
-    
     
     @Override
     protected EntityManager getEntityManager() {
