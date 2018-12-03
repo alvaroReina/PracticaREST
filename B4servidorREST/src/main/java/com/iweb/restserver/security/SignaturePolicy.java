@@ -5,17 +5,18 @@
  */
 package com.iweb.restserver.security;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fusionauth.jwt.Signer;
+import io.fusionauth.jwt.Verifier;
+import io.fusionauth.jwt.hmac.HMACSigner;
+import io.fusionauth.jwt.hmac.HMACVerifier;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
-
 
 /**
  *
@@ -23,107 +24,106 @@ import static java.util.logging.Logger.getLogger;
  */
 public class SignaturePolicy {
 
-    public static final Algorithm DEFAULT_ALG;
-    public static final Map<String, Algorithm> ALGS;
-    
+    public Signer signer;
+    public Verifier verifier;
+
+    public static final Map<String, SignaturePolicy> PCYS;
+    public static final SignaturePolicy DEFAULT_PCY;
+
     static {
-        Algorithm tmp = null;
+        SignaturePolicy tmp = new SignaturePolicy();
         try {
-            tmp = Algorithm.HMAC256("SECRET FOR DEVELOPMENT");
+            String key = "SECRET FOR DEVELOPMENT";
+            tmp.signer = HMACSigner.newSHA256Signer(key);
+            tmp.verifier = HMACVerifier.newVerifier(key);
         } catch (IllegalArgumentException ex) {
             getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            DEFAULT_ALG = tmp;
+            DEFAULT_PCY = tmp;
         }
 
-        ALGS = new HashMap<>();
+        PCYS = new HashMap<>();
         loadBundledKey("/conf/keys/digitalSignature.json");
     }
 
     public static void loadKey(InputStream istream) {
-       
+
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            Map<String,Object> map = mapper.readValue(istream, Map.class);
-            
+            Map<String, Object> map = mapper.readValue(istream, Map.class);
+
             String algname = (String) map.get("alg");
-            
-            Algorithm alg;
             String signKey;
             String verKey;
             String kid;
-            
+
             Object candidate = null;
-            
+
             candidate = map.get("sign");
             if (candidate == null) {
                 err("No candidate sign key. Unable to continue.");
                 return;
             }
             signKey = (String) candidate;
-            
+
             candidate = map.get("verify");
             if (candidate != null) { //not allways mandatory
                 verKey = (String) candidate;
             }
-            
+
             candidate = map.get("kid");
             if (candidate != null) {
                 kid = (String) candidate;
             } else {
                 info("No algorithm kid provided. This will override any previous 'default'.");
                 kid = "default";
-            }   
-            
-            switch(algname){
-                case "HS256": 
-                    alg = Algorithm.HMAC256(signKey);
-                    ALGS.put(kid, alg);
-                break;
-                case"HS384": 
-                    alg = Algorithm.HMAC384(signKey);
-                    ALGS.put(kid, alg);
-                break;
+            }
+
+            SignaturePolicy pcy = new SignaturePolicy();
+
+            switch (algname) {
+                case "HS256":
+                    pcy.signer = HMACSigner.newSHA256Signer(signKey);
+                    pcy.verifier = HMACVerifier.newVerifier(signKey);
+                    break;
+                case "HS384":
+                    pcy.signer = HMACSigner.newSHA384Signer(signKey);
+                    pcy.verifier = HMACVerifier.newVerifier(signKey);
+                    break;
                 case "HS512":
-                    alg = Algorithm.HMAC512(signKey);
-                    ALGS.put(kid, alg);
-                break;
+                    pcy.signer = HMACSigner.newSHA512Signer(signKey);
+                    pcy.verifier = HMACVerifier.newVerifier(signKey);
+                    break;
+                //case "EC256": //En un futuro
                 default:
                     throw new RuntimeException("Unsupported algorithm: " + algname);
             }
             
-        } catch (IOException ex) {
+            PCYS.put(kid,pcy);
+        } catch (IOException | RuntimeException ex) {
             Logger.getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RuntimeException ex) {
-             Logger.getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void loadBundledKey(String path) {
         InputStream istream = SignaturePolicy.class.getResourceAsStream(path);
         info("Adding resources from " + path);
-        
-        if (istream == null){
+
+        if (istream == null) {
             err("Unable to find the resources under " + path);
             return;
         }
-        
+
         loadKey(istream);
     }
-    
-    
+
     private static void info(String msg) {
         Logger.getLogger(SignaturePolicy.class.getName()).log(Level.CONFIG, msg);
     }
-    
+
     private static void err(String err) {
         Logger.getLogger(SignaturePolicy.class.getName()).log(Level.WARNING, err);
     }
-    
-    /* Posible adición en el futuro
-    public static SignaturePolicy loadConfig(InputStream istream) throws IOException {
-        throw new UnsupportedOperationException("Not implemented");
-    } 
-     */
+
 }

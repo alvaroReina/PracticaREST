@@ -5,18 +5,8 @@
  */
 package com.iweb.restserver.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import io.fusionauth.jwt.domain.InvalidJWTSignatureException;
+import io.fusionauth.jwt.domain.JWT;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
@@ -39,41 +29,44 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-
-        Algorithm alg = null;//SignaturePolicy.ALGS.get("session-token");
-        /*
+       
         String token = requestContext.getHeaderString(AUTH_TOKEN);
         if (token == null || "".equals(token)) {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
             return;
         }
-         */
-
-        String token = null;
+        
+        SignaturePolicy pcy = SignaturePolicy.PCYS.get("session-token");
+        
         try {
-            alg = Algorithm.HMAC256("secret");
-            token = JWT.create()
-                    .withIssuer("iweb").sign(alg);
-            
-            System.out.println("Generated token: " + token);
-            
-           JWTVerifier verifier = JWT
-                   .require(alg)
-                   .build();
-           
-           DecodedJWT jwt = verifier.verify(token);
-           
-            System.out.println(jwt.getHeader());
-        } catch (JWTCreationException ex) {
-            System.out.println("Creation exception: " + ex.getMessage());
-        } catch (JWTVerificationException ex) {
-            System.out.println("Verification exception: " + ex.getMessage());
+            JWT jwt = JWT.getDecoder().decode(token,pcy.verifier);    
+            System.out.println("Funcionó: " + jwt.issuer );
+        } catch(InvalidJWTSignatureException ex) {
+            requestContext.abortWith(RESP_UNAUTHORIZED.build());
+            return;
         }
         
-        /*
-            TODO
-         */
-        System.out.println("El filtro ha pasado esta request, pero no comprueba nada!");
     }
 
+    
+    /* Ejemplo código
+        
+    Signer signer = HMACSigner.newSHA256Signer("secret");
+
+        JWT jwt = new JWT().setIssuer("iweb");
+        String encoded = JWT.getEncoder().encode(jwt, signer);
+        Verifier verifier = HMACVerifier.newVerifier("secret");
+
+        try {
+            JWT decoded = JWT.getDecoder().decode(encoded, verifier);
+            if (decoded == null && decoded.issuer != null) {
+                System.out.println("Issuer: " + decoded.issuer);
+            }
+        } catch (InvalidJWTSignatureException e) {
+            System.out.println(e);
+            requestContext.abortWith(RESP_UNAUTHORIZED.build());
+        }
+
+    */
+    
 }
