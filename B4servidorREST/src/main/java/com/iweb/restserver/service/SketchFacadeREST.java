@@ -89,7 +89,7 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> topScore() {
-        Query q =em.createQuery("");
+        Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.score DESC");
         q.setMaxResults(5);
         return q.getResultList();
     }
@@ -98,7 +98,9 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("latest")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> latest() {
-        return null;
+        Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.createdat DESC");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET
