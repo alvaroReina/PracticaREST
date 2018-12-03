@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -88,7 +89,9 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> topScore() {
-        return null;
+        Query q =em.createQuery("");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET

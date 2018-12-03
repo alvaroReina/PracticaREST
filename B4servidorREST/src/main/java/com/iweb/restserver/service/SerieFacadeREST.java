@@ -93,7 +93,9 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("mostviewed")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Serie> mostViewed() {
-        return null;
+        Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.views DESC");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET
