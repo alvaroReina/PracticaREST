@@ -7,6 +7,8 @@ package com.iweb.restserver.security;
 
 import java.awt.BorderLayout;
 import java.security.Principal;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
@@ -20,6 +22,7 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 @RequireAuthentication
+@Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
     public static final ResponseBuilder RESP_UNAUTHORIZED  = Response.status(Response.Status.UNAUTHORIZED).entity("You must be authenticated to have access to this resource");
