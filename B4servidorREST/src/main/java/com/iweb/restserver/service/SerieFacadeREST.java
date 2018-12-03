@@ -81,6 +81,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @GET
     @Path("top")
+    
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Serie> topScore() {       
         Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
