@@ -30,7 +30,7 @@ public class SignaturePolicy {
         Algorithm tmp = null;
         try {
             tmp = Algorithm.HMAC256("SECRET FOR DEVELOPMENT");
-        } catch (IllegalArgumentException | UnsupportedEncodingException ex) {
+        } catch (IllegalArgumentException ex) {
             getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             DEFAULT_ALG = tmp;
@@ -95,7 +95,7 @@ public class SignaturePolicy {
             
         } catch (IOException ex) {
             Logger.getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
              Logger.getLogger(SignaturePolicy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
