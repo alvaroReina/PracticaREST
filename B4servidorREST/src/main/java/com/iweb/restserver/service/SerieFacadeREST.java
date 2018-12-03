@@ -11,6 +11,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -81,8 +82,10 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @GET
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Serie> topScore() {
-        return null;
+    public List<Serie> topScore() {       
+        Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET
