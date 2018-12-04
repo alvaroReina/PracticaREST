@@ -57,10 +57,7 @@ public class Sketch implements Serializable {
     private Integer score;
     @JoinColumn(name = "IDSERIE", referencedColumnName = "ID")
     @ManyToOne(optional = false)
-    private Serie idserie;
-    @Size(max = 256)
-    @Column(name = "picture")
-    private String picture;
+    private Serie idserie;    
     
     public Sketch() {
     }
@@ -112,14 +109,6 @@ public class Sketch implements Serializable {
 
     public void setIdserie(Serie idserie) {
         this.idserie = idserie;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     @Override
