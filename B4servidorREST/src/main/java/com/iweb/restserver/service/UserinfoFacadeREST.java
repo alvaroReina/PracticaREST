@@ -5,6 +5,7 @@
  */
 package com.iweb.restserver.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.j2objc.annotations.AutoreleasePool;
 import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.security.RequireAuthentication;
@@ -18,12 +19,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
  * @author jose
  */
 @Stateless
+@Path("/")
 public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
@@ -36,8 +39,9 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     @POST
     @Path("signin")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void signin(Userinfo entity) {
-        super.create(entity);
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response signin(Userinfo entity) throws JsonProcessingException {
+        return ResponseFactory.authenticationFailed("EMINEM IS REAL");
     }
 
     @GET
