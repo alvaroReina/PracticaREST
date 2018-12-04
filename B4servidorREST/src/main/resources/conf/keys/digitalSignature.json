@@ -1,5 +1,0 @@
-{
-    "alg": "HS384", 
-    "sign": "this is the key",
-    "kid": "session-token"
-}
