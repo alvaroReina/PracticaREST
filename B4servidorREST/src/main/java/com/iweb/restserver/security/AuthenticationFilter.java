@@ -7,6 +7,8 @@ package com.iweb.restserver.security;
 
 import io.fusionauth.jwt.domain.InvalidJWTSignatureException;
 import io.fusionauth.jwt.domain.JWT;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
