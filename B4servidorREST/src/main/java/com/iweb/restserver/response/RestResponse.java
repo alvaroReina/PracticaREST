@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 /**
@@ -23,18 +22,6 @@ import javax.ws.rs.core.Response.Status;
 public class RestResponse {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    
-    private static final ResponseBuilder INTERNAL_PROCESSING_ERROR;
-        
-    static {
-        
-        INTERNAL_PROCESSING_ERROR = 
-            Response.serverError()
-                .encoding(MediaType.APPLICATION_JSON)
-                .entity(String.format("{%s: {%s}}", "\"error\"", 
-                        "\"cause\": \"The server could not process the responseS\""));       
-    }
-    
     
     protected boolean ok;
     protected Map<String,Object> attributes;
@@ -75,8 +62,11 @@ public class RestResponse {
         try {
             json = MAPPER.writeValueAsString(this.attributes);
         } catch (JsonProcessingException ex) {
+            
             Logger.getLogger(RestResponse.class.getName()).log(Level.SEVERE, null, ex);
-            return INTERNAL_PROCESSING_ERROR.build();
+            Logger.getLogger(RestResponse.class.getName())
+                    .log(Level.SEVERE, "SUMARY: There was a problem with the JSON parsing while building this response");
+            return Response.serverError().build();
         }
         
         return Response

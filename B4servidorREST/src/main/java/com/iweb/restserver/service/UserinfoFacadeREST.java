@@ -6,7 +6,6 @@
 package com.iweb.restserver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.j2objc.annotations.AutoreleasePool;
 import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.security.RequireAuthentication;
 import javax.ejb.Stateless;
