@@ -108,8 +108,17 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
-        return null;
+        if (from == null || to == null) {
+            throw new RuntimeException("Null date");
+        }
+        
+        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        
+        return q.getResultList();    
     }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
