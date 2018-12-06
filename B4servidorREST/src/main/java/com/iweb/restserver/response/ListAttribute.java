@@ -42,7 +42,8 @@ public class ListAttribute extends Attribute{
      * @return 
     */
     public ListAttribute withElements(List<Object> elements) {
-        this.elements = elements;
+        this.elements.clear();
+        this.elements.addAll(elements);
         return this;
     }
     
@@ -54,7 +55,6 @@ public class ListAttribute extends Attribute{
     public ListAttribute withElements(Object[] elements) {
         this.elements.clear();
         this.elements.addAll(Arrays.asList(elements));
-        
         return this;
     }
 
