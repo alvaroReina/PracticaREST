@@ -1,7 +1,5 @@
 package com.iweb.restserver.response;
 
-
-import com.iweb.restserver.response.Attribute;
 import java.util.HashMap;
 import java.util.Map;
 

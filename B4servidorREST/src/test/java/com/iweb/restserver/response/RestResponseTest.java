@@ -6,7 +6,6 @@
 package com.iweb.restserver.response;
 
 import com.iweb.restserver.entity.Userinfo;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response.Status;

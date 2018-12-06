@@ -7,6 +7,8 @@ package com.iweb.restserver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.iweb.restserver.entity.Userinfo;
+import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.RestResponse;
 import com.iweb.restserver.security.RequireAuthentication;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -41,7 +43,19 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON})
     public Response signin(@FormParam("Gtoken") String tokenID) throws JsonProcessingException {
-        return null;
+        RestResponse resp = new RestResponse(true);
+        
+        ErrorAttribute errattr = new ErrorAttribute("error test")
+                .withCause("dummy cause")
+                .withHint("use me as an example")
+                .withFields(new String[]{"email", "passwod"});
+        
+        resp.withAttribute("token", tokenID)
+                    .withStatus(Response.Status.ACCEPTED)
+                    .withComposedAttribute(errattr)
+                    .withAttribute("fecha", "01-12-1800");
+        
+        return resp.build();
     }
 
     @GET
@@ -56,5 +70,4 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
 }

@@ -40,17 +40,17 @@ public class RestResponse {
     
     
     
-    RestResponse withAttribute(String k, Object v) {
+    public RestResponse withAttribute(String k, Object v) {
         this.attributes.put(k, v);
         return this;
     }
     
-    RestResponse withStatus(Response.Status status) {
+    public RestResponse withStatus(Response.Status status) {
         this.status = status;
         return this;
     }
     
-    RestResponse withComposedAttribute(Attribute attrb) {
+    public RestResponse withComposedAttribute(Attribute attrb) {
         this.attributes.put(attrb.getName(), attrb.pack());
         return this;
     } 
