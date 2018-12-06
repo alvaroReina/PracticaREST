@@ -96,12 +96,18 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         GoogleIdToken googleDecoded;
         try {
             googleDecoded = GOOGLE_VERIFIER.verify(tokenID);
-        } catch (GeneralSecurityException | IOException ex) {
+        } catch (GeneralSecurityException ex) {
             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
             return resp
                     .isSuccessful(false)
                     .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
                     .withAttribute("exception", ex)
+                    .build();
+        } catch (IOException ex) {
+            Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+            return resp.isSuccessful(false)
+                    .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
+                    .withComposedAttribute(new ErrorAttribute().withCause("malformed token"))
                     .build();
         }
 
@@ -109,7 +115,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             ErrorAttribute attr = new ErrorAttribute()
                     .withCause("invalid token")
                     .withHint("obtain a valid one");
-            return resp
+            return resp.isSuccessful(false)
                     .withComposedAttribute(attr)
                     .withStatus(Response.Status.UNAUTHORIZED)
                     .build();
