@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,10 +39,10 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
     @POST
     @Path("signin")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON})
-    public Response signin(Userinfo entity) throws JsonProcessingException {
-        return ResponseFactory.authenticationFailed("EMINEM IS REAL");
+    public Response signin(@FormParam("Gtoken") String tokenID) throws JsonProcessingException {
+        return null;
     }
 
     @GET
