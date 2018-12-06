@@ -57,6 +57,7 @@ public class RestResponse {
         
     public Response build() {
         
+        this.attributes.put("ok", this.ok);
         
         String json;
         try {
