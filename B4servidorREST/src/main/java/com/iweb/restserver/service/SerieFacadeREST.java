@@ -62,7 +62,10 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Serie find(@PathParam("id") Integer id) {
-        return super.find(id);
+        Serie s = super.find(id);
+        Integer v = s.getViews() + 1;
+        s.setViews(v);
+        return s;
     }
 
     @GET
@@ -80,8 +83,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     }
 
     @GET
-    @Path("top")
-    
+    @Path("top")    
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Serie> topScore() {       
         Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
@@ -104,7 +106,15 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Serie> searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-        return null;
+        if (from == null || to == null) {
+            throw new RuntimeException("Null filter");
+        }
+        
+        Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title BETWEEN :from AND :to LIKE :%title%");
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        q.setParameter("tittle", "%"+title+"%");
+        return q.getResultList();  
     }
 
     @GET

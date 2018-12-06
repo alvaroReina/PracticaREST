@@ -115,7 +115,6 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
         q.setParameter("from", from);
         q.setParameter("to", to);
-        
         return q.getResultList();    
     }
     
