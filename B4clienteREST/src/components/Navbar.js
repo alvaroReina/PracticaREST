@@ -1,7 +1,10 @@
 import React from 'react';
 import { Menu, MenuItem, Avatar, AppBar, Toolbar, IconButton, InputBase, Typography } from '@material-ui/core';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import SearchIcon from '@material-ui/icons/Search';
 import { withStyles } from '@material-ui/core/styles';
+import { GOOGLE_CLIENT_ID } from '../services/cte';
+import User from '../models/User'
 
 import Search from './Search';
 
@@ -22,9 +25,24 @@ class NavBar extends React.Component {
         this.setState({ anchorrEl: null })
     }
 
+    handleLogin = (response) => {
+        const user = new User(
+            response.profileObj.name, 
+            response.profileObj.email,
+            response.profileObj.imageUrl
+        );
+        this.props.login(user)
+      }
+    
+    handleLogout = () => {
+        this.props.logout()
+    }
+
+    //Dependo del usuario a nivel de aplicacion (props) y 
+    //el login no está encapsulado en su propio componente, no creo que sea necesario por ahora
     render() {
         const { anchorEl } = this.state;
-        const { classes, user } = this.props;
+        const { classes, logged, user } = this.props;
         const isMenuOpen = Boolean(anchorEl);
 
         const renderMenu = (
@@ -36,7 +54,7 @@ class NavBar extends React.Component {
                 onClose={this.handleMenuClose}
             >
                 <MenuItem onClick={this.handleMenuClose}>
-                    <Avatar component='img' alt='picture' src={user.picture}></Avatar>
+                    <Avatar component='img' alt='picture' src={user.imageUrl}></Avatar>
                 </MenuItem>
                 <MenuItem onClick={this.handleMenuClose}>My Account</MenuItem>
             </Menu>
@@ -46,14 +64,30 @@ class NavBar extends React.Component {
             <div className={classes.root}>
                 <AppBar position='fixed'>
                     <Toolbar>
+                        { user &&
                         <IconButton onClick={() => { alert(user.email) }}>
-                            <Avatar alt='user portrait' src={user.picture} />
+                            <Avatar alt='user portrait' src={user.imageUrl} />
                         </IconButton>
+                        }
                         <Typography className={classes.title} variant="h6" color="inherit" noWrap>
                             Comic manager
                         </Typography>
                         <Search />
                         <div className={classes.grow} />
+                        {
+                            !logged &&
+                            <GoogleLogin
+                                clientId={GOOGLE_CLIENT_ID}
+                                onSuccess={this.handleLogin}
+                                onFailure={this.responseGoogle}
+                            />
+                        }
+                        {
+                            logged &&
+                            <GoogleLogout
+                                onLogoutSuccess={this.handleLogout}
+                            />
+                        }
                     </Toolbar>
                 </AppBar>
                 {renderMenu}

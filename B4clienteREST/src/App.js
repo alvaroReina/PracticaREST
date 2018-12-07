@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import GridSeries from './components/GridSeries';
 import NavBar from './components/Navbar';
 
-const currentUser = {
-  FirstName: "Stan",
-  LastName: "Lee",
-  email: "Marvel",
-  picture: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvIHJk5Ir2ET21cuSYdj4Gv9c4Z1nHVwgvci5XT6hMA_7Ai4GU3A"
+const placeholderUser = {
+  name: "Not logged",
+  email: "",
+  imageUrl: "http://www.buckinghamandcompany.com.au/wp-content/uploads/2016/03/profile-placeholder-350x350.png"
 }
 
 const data = [
@@ -34,11 +33,34 @@ const data = [
 ]
 
 class App extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      //TODO coger token en el navegador y comprobarlo
+      user: placeholderUser,
+      logged: false
+    }
+    this.login = this.login.bind(this)
+    this.logout = this.logout.bind(this)
+  }
+
+  //Usuario autenticado a nivel de aplicacion
+  login(user) {
+    //TODO llamada al backend para generar token
+    this.setState({logged: true, user})
+  }
+
+  logout() {
+    //TODO anular token?
+    this.setState({logged: false, user: placeholderUser})
+  }
+
   render() {
     return (
       <div className="App">
-        <NavBar user={currentUser}/>
-        <GridSeries series={data} currentUser={currentUser}/>
+        <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} changeUser = {this.changeUser}/>
+        <GridSeries series={data} currentUser={this.state.user}/>
       </div>
     );
   }
