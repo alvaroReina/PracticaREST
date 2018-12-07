@@ -39,52 +39,29 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      //TODO coger token en el navegador y comprobarlo
       user: placeholderUser,
-      logged: false
+      logged: false,
+      sessionToken: undefined
     }
     this.login = this.login.bind(this)
-    this.logout = this.logout.bind(this)
+    this.logout = this.logout.bind(this)   
+  }
+
+  componentDidMount(){
+    let sessionToken = localStorage.getItem("session-token");
+    let storedUser   = localStorage.getItem("userinfo");
+    if (sessionToken && storedUser){
+      //Try to recover info
+      this.setState({logged: true, user: JSON.parse(storedUser), sessionToken})
+    } else {
+      localStorage.removeItem("session-token");
+      localStorage.removeItem("userinfo");
+    }
   }
 
   //Usuario autenticado a nivel de aplicacion
   async login(gtoken, user) {
-
-    let body = {
-      "Gtoken": gtoken
-    }
-
-    console.log("With body", body)
-
-    let xml = new XMLHttpRequest();
-    xml.open("POST", SIGNIN, true);
-    xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xml.onreadystatechange = (aEvt) => {
-      if (xml.readyState === 4) {
-        console.log("State 4");
-        console.log("StatusCode:", xml.status, xml.statusText)
-        console.log("Response Text:",xml.responseText);
-        console.log("Headers:", JSON.stringify(xml.getAllResponseHeaders()))
-      } else if ( xml.readyState === 3) {
-        console.log("State 3");
-      } else {
-        console.log("Loading", xml.readyState);
-      }
-    };
-    xml.onerror = (err) => {
-      console.log("On error", err);
-    }
-
-    xml.onabort = (abort) => {
-      console.log("Abort", abort)
-    }
-
-    xml.send(`Gtoken=${body.Gtoken}`);
-
-
-    return;
-
-
+    
     if (!gtoken) {
       alert("We couldn't sign you in")
       return;
@@ -92,32 +69,33 @@ class App extends Component {
 
     let sessionToken = undefined;
 
+    let params = new URLSearchParams();
+    params.append('Gtoken', gtoken);
+
     try {
-      let resp = await Axios.post(SIGNIN, { "Gtoken": gtoken }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-      console.log(resp);
 
-      if (resp.ok) {
+      let resp = await Axios.post(SIGNIN, params, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
 
-        //Expected fields: session-token, user: {email, name, role, id}
-        let userDB = resp.user;
-
+      let data = resp.data;
+      if (data.ok) {
+        //Expected fields: session-token, user: {email, fullname, userrole, id}
+        let userDB = data.user.value;
         user.email = userDB.email;
-        user.name = userDB.name;
-        user.role = userDB.role;
+        user.name = userDB.fullname;
+        user.role = userDB.userrole;
         user.id = userDB.id;
 
-        sessionToken = resp["session-token"];
+        sessionToken = data["session-token"];
 
       } else {
-        //TODO mostrar al usuario detalles de por qué ha fallado con cause, fields, hint.
-        alert(resp.error.cause);
+        alert(data.error.cause);
         return;
       }
 
 
 
     } catch (ex) {
-      console.log('Signin failed due to', ex);
+      alert('Signing not available');
       return;
     }
 
@@ -127,18 +105,20 @@ class App extends Component {
     }
 
     localStorage.setItem("session-token", sessionToken);
+    localStorage.setItem("userinfo", JSON.stringify(user));
     this.setState({ logged: true, user, sessionToken })
   }
 
   logout() {
     localStorage.removeItem("session-token");
+    localStorage.removeItem("userinfo");
     this.setState({ logged: false, user: placeholderUser, sessionToken: undefined })
   }
 
   render() {
     return (
       <div className="App">
-        <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} changeUser={this.changeUser} />
+        <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} />
         <GridSeries series={data} currentUser={this.state.user} />
       </div>
     );

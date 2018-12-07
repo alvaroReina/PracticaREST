@@ -5,42 +5,42 @@
  */
 package com.iweb.restserver.service;
 
-import com.iweb.restserver.entity.Userinfo;
-import com.iweb.restserver.response.ErrorAttribute;
-import com.iweb.restserver.response.RestResponse;
-import com.iweb.restserver.security.RequireAuthentication;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.exceptions.ValidationException;
+import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.RestResponse;
 import com.iweb.restserver.response.SingleEntryAttribute;
+import com.iweb.restserver.security.RequireAuthentication;
 import com.iweb.restserver.security.SignaturePolicy;
 import io.fusionauth.jwt.domain.JWT;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
-import javax.ws.rs.OPTIONS;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -71,21 +71,13 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         return singleton;
     }
 
+    
+    
     @PersistenceContext(unitName = "com.iweb_B4servidorREST_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
     public UserinfoFacadeREST() {
         super(Userinfo.class);
-    }
-
-    @OPTIONS
-    @Path("signin")
-    public Response optsSignin() {
-        return Response.status(Response.Status.CREATED)
-                .header("Access-Control-Allow-Origin", "Pepes Only")
-                .encoding("text/plain")
-                .entity("eminem")
-                .build();
     }
 
     @POST
@@ -137,7 +129,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
                     .build();
         }
 
-        Payload payload = googleDecoded.getPayload();
+        GoogleIdToken.Payload payload = googleDecoded.getPayload();
 
         Userinfo incomingUser;
 
@@ -155,6 +147,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             if (user == null) {
                 user = register(incomingUser);
             }
+            
             /*
                 if (user == null) {
                 incomingUser.setId(null);
@@ -171,13 +164,11 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             jwt.setExpiration(ZonedDateTime.now().plusWeeks(1));
 
             String sessionToken = JWT.getEncoder().encode(jwt, getPolicy().signer);
-
-            System.out.println("Session token:" + sessionToken);
             //Crear la respuesta.
-            resp.withAttribute("token", sessionToken)
+            resp.withAttribute("session-token", sessionToken)
                     .withComposedAttribute(new SingleEntryAttribute("user", user, "Userinfo"))
                     .withStatus(Response.Status.OK)
-                    .withAttribute("role", user.getRole());
+                    .withAttribute("role", user.getUserrole());
 
         } catch (PersistenceException e) {
             return resp.isSuccessful(false)
@@ -189,17 +180,17 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         return resp.build();
     }
 
-    private Userinfo extractUser(Payload payload) {
+    private Userinfo extractUser(GoogleIdToken.Payload payload) {
         Userinfo user;
 
         String email = payload.getEmail();
         String name = (String) payload.get("name");
         String pictureUrl = (String) payload.get("picture");
 
-        user = new Userinfo(0, name, email);
+        user = new Userinfo(0, name, email, null, pictureUrl);
         user.setPicture(pictureUrl);
 
-        if (user.getName() == null || user.getEmail() == null) {
+        if (user.getFullname()== null || user.getEmail() == null) {
             throw new ValidationException("invalid token");
         }
 
@@ -223,22 +214,72 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         } catch (NoResultException e) {
             return null;
         }
-
     }
 
     private Userinfo register(Userinfo uinfo) {
         try {
             getEntityManager().persist(uinfo);
-            return findByEmail(uinfo);
+            Userinfo ret = findByEmail(uinfo);
+            return ret;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return uinfo;
         }
     }
 
+    
+    
+    
+    @POST
+    @Override
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void create(Userinfo entity) {
+        super.create(entity);
+    }
+
+    @PUT
+    @Path("{id}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void edit(@PathParam("id") Integer id, Userinfo entity) {
+        super.edit(entity);
+    }
+
+    @DELETE
+    @Path("{id}")
+    public void remove(@PathParam("id") Integer id) {
+        super.remove(super.find(id));
+    }
+
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Userinfo find(@PathParam("id") Integer id) {
+        return super.find(id);
+    }
+
+    @GET
+    @Override
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Userinfo> findAll() {
+        return super.findAll();
+    }
+
+    @GET
+    @Path("{from}/{to}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Userinfo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+        return super.findRange(new int[]{from, to});
+    }
+
+    @GET
+    @Path("count")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String countREST() {
+        return String.valueOf(super.count());
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-
 }

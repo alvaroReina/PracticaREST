@@ -5,12 +5,14 @@
  */
 package com.iweb.restserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Serie.findById", query = "SELECT s FROM Serie s WHERE s.id = :id")
     , @NamedQuery(name = "Serie.findByTitle", query = "SELECT s FROM Serie s WHERE s.title = :title")
     , @NamedQuery(name = "Serie.findByScore", query = "SELECT s FROM Serie s WHERE s.score = :score")
-    , @NamedQuery(name = "Serie.findByViews", query = "SELECT s FROM Serie s WHERE s.views = :views")})
+    , @NamedQuery(name = "Serie.findByViews", query = "SELECT s FROM Serie s WHERE s.views = :views")
+    , @NamedQuery(name = "Serie.findByPicture", query = "SELECT s FROM Serie s WHERE s.picture = :picture")})
 public class Serie implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,14 +58,17 @@ public class Serie implements Serializable {
     private Integer score;
     @Column(name = "VIEWS")
     private Integer views;
-    @JoinColumn(name = "AUTHOR", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private Userinfo author;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie")
-    private Collection<Sketch> sketchCollection;
-    @Size(max = 256)
-    @Column(name = "picture")
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 256)
+    @Column(name = "PICTURE")
     private String picture;
+    @JoinColumn(name = "AUTHOR", referencedColumnName = "ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Userinfo author;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Collection<Sketch> sketchCollection;
 
     public Serie() {
     }
@@ -71,9 +77,10 @@ public class Serie implements Serializable {
         this.id = id;
     }
 
-    public Serie(Integer id, String title) {
+    public Serie(Integer id, String title, String picture) {
         this.id = id;
         this.title = title;
+        this.picture = picture;
     }
 
     public Integer getId() {
@@ -108,20 +115,20 @@ public class Serie implements Serializable {
         this.views = views;
     }
 
-    public Userinfo getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Userinfo author) {
-        this.author = author;
-    }
-    
     public String getPicture() {
         return picture;
     }
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public Userinfo getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Userinfo author) {
+        this.author = author;
     }
 
     @XmlTransient

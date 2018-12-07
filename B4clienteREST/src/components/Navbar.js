@@ -26,23 +26,19 @@ class NavBar extends React.Component {
     }
 
     handleLogin = (response) => {
-        console.log(response);
         const user = new User(
-            response.profileObj.name, 
+            response.profileObj.name,
             response.profileObj.email,
             response.profileObj.imageUrl
         );
         let gtoken = response.tokenId;
-        console.log(gtoken, user);
         this.props.login(gtoken, user)
-      }
-    
+    }
+
     handleLogout = () => {
         this.props.logout()
     }
 
-    //Dependo del usuario a nivel de aplicacion (props) y 
-    //el login no está encapsulado en su propio componente, no creo que sea necesario por ahora
     render() {
         const { anchorEl } = this.state;
         const { classes, logged, user } = this.props;
@@ -67,10 +63,10 @@ class NavBar extends React.Component {
             <div className={classes.root}>
                 <AppBar position='fixed'>
                     <Toolbar>
-                        { user &&
-                        <IconButton onClick={() => { alert(user.email) }}>
-                            <Avatar alt='user portrait' src={user.imageUrl} />
-                        </IconButton>
+                        {user &&
+                            <IconButton onClick={() => { alert(user.email) }}>
+                                <Avatar alt='user portrait' src={user.imageUrl} />
+                            </IconButton>
                         }
                         <Typography className={classes.title} variant="h6" color="inherit" noWrap>
                             Comic manager
