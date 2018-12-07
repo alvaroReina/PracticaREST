@@ -47,7 +47,7 @@ import javax.persistence.TypedQuery;
 @Path("/")
 public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
-    private static final String CLIENT_ID = "no se que client id tenemos";
+    private static final String CLIENT_ID = "676906808110-oml9olnm30pdcvk3jsjl9e9pp5hdof9j.apps.googleusercontent.com";
 
     private static SignaturePolicy singleton;
 
