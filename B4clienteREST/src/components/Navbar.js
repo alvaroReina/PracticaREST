@@ -26,12 +26,15 @@ class NavBar extends React.Component {
     }
 
     handleLogin = (response) => {
+        console.log(response);
         const user = new User(
             response.profileObj.name, 
             response.profileObj.email,
             response.profileObj.imageUrl
         );
-        this.props.login(user)
+        let gtoken = response.tokenId;
+        console.log(gtoken, user);
+        this.props.login(gtoken, user)
       }
     
     handleLogout = () => {
