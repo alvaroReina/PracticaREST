@@ -7,10 +7,10 @@ drop table UserInfo;
 -----------------------
 create table UserInfo (
 id integer not null generated always as identity (START WITH 1, INCREMENT BY 1),
-name varchar(200) not null,
+fullName varchar(200) not null,
 email varchar(256) unique not null,
-role varchar(16) default 'USER',
-picture varchar(256) default 'assets/img/incongnito.png',
+userRole varchar(16) NOT NULL WITH default 'USER',
+picture varchar(256) NOT NULL WITH default 'assets/img/incongnito.png',
 CONSTRAINT UserInfo_pk PRIMARY KEY (id)
 );
 
@@ -20,7 +20,7 @@ title varchar (50) not null,
 score integer default 0,
 author integer not null,
 views integer default 0,
-picture varchar(256) default 'assets/img/not-found.jpg',
+picture varchar(256) NOT NULL WITH default 'assets/img/not-found.jpg',
 FOREIGN KEY (author) REFERENCES UserInfo(id),
 CONSTRAINT Serie_pk PRIMARY KEY (id)
 );
@@ -38,19 +38,19 @@ FOREIGN KEY (idserie) REFERENCES Serie(id) ON DELETE CASCADE
 ----------------------
 -- Create users info
 ----------------------
-INSERT INTO UserInfo(name, email) VALUES ('Ibañez', 'ibanyez@system.web');
-INSERT INTO UserInfo(name, email) VALUES ('Marvel', 'marvel@system.web');
-INSERT INTO UserInfo(name, email) VALUES ('Sabías que...','diduknow@system.web');
-INSERT INTO UserInfo(name, email) VALUES ('J.K. Rowling','jkrowling@system.web');
-INSERT INTO UserInfo(name, email) VALUES ('Dr. DRE','forget@about.dre');
-INSERT INTO UserInfo(name, email) VALUES ('Thomas Smith', 'thomas_shmith@gmail.com');
-INSERT INTO UserInfo(name, email) VALUES ('Anne Watson', 'aw@outlook.com');
+INSERT INTO UserInfo(fullName, email) VALUES ('Ibañez', 'ibanyez@system.web');
+INSERT INTO UserInfo(fullName, email) VALUES ('Marvel', 'marvel@system.web');
+INSERT INTO UserInfo(fullName, email) VALUES ('Sabías que...','diduknow@system.web');
+INSERT INTO UserInfo(fullName, email) VALUES ('J.K. Rowling','jkrowling@system.web');
+INSERT INTO UserInfo(fullName, email) VALUES ('Dr. DRE','forget@about.dre');
+INSERT INTO UserInfo(fullName, email) VALUES ('Thomas Smith', 'thomas_shmith@gmail.com');
+INSERT INTO UserInfo(fullName, email) VALUES ('Anne Watson', 'aw@outlook.com');
 
 ----------------------
 -- Admin Account
 ----------------------
-INSERT INTO UserInfo(name, email, role) VALUES ('administrador', 'pruebaparaingweb@gmail.com', 'ADMIN');
-INSERT INTO UserInfo(name, email, role) VALUES ('B4 Iweb', ' b4ingenieriaweb@gmail.com', 'ADMIN');
+INSERT INTO UserInfo(fullName, email, userRole) VALUES ('administrador', 'pruebaparaingweb@gmail.com', 'ADMIN');
+INSERT INTO UserInfo(fullName, email, userRole) VALUES ('B4 Iweb', 'b4ingenieriaweb@gmail.com', 'ADMIN');
 ----------------------
 -- Create some series for administrador
 ----------------------

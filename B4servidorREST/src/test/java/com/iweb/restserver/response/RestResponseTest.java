@@ -118,9 +118,9 @@ public class RestResponseTest {
     public void composeList(){
         
         Userinfo[] elements = new Userinfo[] {
-            new Userinfo(0, "pepe","pepe@mail"),
-            new Userinfo(1, "fido", "fido@mail"),
-            new Userinfo(2, "frog", "frog@mail")
+            new Userinfo(0, "pepe","pepe@mail", null, null),
+            new Userinfo(1, "fido", "fido@mail", null, null),
+            new Userinfo(2, "frog", "frog@mail", null, null)
         };
         
         String name = "lista-usuarios";
@@ -146,7 +146,7 @@ public class RestResponseTest {
         List<Object> list = (List<Object>)objetoLista.get("elements");
         
         for (int i = 0; i < elements.length; ++i) {
-            assertEquals(elements[i].getName(), ((Userinfo) list.get(i)).getName());
+            assertEquals(elements[i].getFullname(), ((Userinfo) list.get(i)).getFullname());
         }
         
         
