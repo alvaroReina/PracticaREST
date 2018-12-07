@@ -50,6 +50,41 @@ class App extends Component {
   //Usuario autenticado a nivel de aplicacion
   async login(gtoken, user) {
 
+    let body = {
+      "Gtoken": gtoken
+    }
+
+    console.log("With body", body)
+
+    let xml = new XMLHttpRequest();
+    xml.open("POST", SIGNIN, true);
+    xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xml.onreadystatechange = (aEvt) => {
+      if (xml.readyState === 4) {
+        console.log("State 4");
+        console.log("StatusCode:", xml.status, xml.statusText)
+        console.log("Response Text:",xml.responseText);
+        console.log("Headers:", JSON.stringify(xml.getAllResponseHeaders()))
+      } else if ( xml.readyState === 3) {
+        console.log("State 3");
+      } else {
+        console.log("Loading", xml.readyState);
+      }
+    };
+    xml.onerror = (err) => {
+      console.log("On error", err);
+    }
+
+    xml.onabort = (abort) => {
+      console.log("Abort", abort)
+    }
+
+    xml.send(`Gtoken=${body.Gtoken}`);
+
+
+    return;
+
+
     if (!gtoken) {
       alert("We couldn't sign you in")
       return;
@@ -58,9 +93,9 @@ class App extends Component {
     let sessionToken = undefined;
 
     try {
-      let resp = await Axios.post(SIGNIN, { "Gtoken": gtoken })
+      let resp = await Axios.post(SIGNIN, { "Gtoken": gtoken }, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
       console.log(resp);
-     
+
       if (resp.ok) {
 
         //Expected fields: session-token, user: {email, name, role, id}
@@ -69,7 +104,7 @@ class App extends Component {
         user.email = userDB.email;
         user.name = userDB.name;
         user.role = userDB.role;
-        user.id   = userDB.id;
+        user.id = userDB.id;
 
         sessionToken = resp["session-token"];
 

@@ -37,7 +37,10 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.OPTIONS;
 
 /**
  *
@@ -75,11 +78,24 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         super(Userinfo.class);
     }
 
+    @OPTIONS
+    @Path("signin")
+    public Response optsSignin() {
+        return Response.status(Response.Status.CREATED)
+                .header("Access-Control-Allow-Origin", "Pepes Only")
+                .encoding("text/plain")
+                .entity("eminem")
+                .build();
+    }
+
     @POST
     @Path("signin")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON})
     public Response signin(@FormParam("Gtoken") String tokenID) {
+
+        System.out.println("Gtoken:" + tokenID);
+
         RestResponse resp = new RestResponse(true);
 
         if (tokenID == null || "".equals(tokenID)) {
@@ -136,11 +152,15 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
         try {
             Userinfo user = findByEmail(incomingUser);
-
             if (user == null) {
-                em.persist(incomingUser);
-                user = findByEmail(incomingUser);
+                user = register(incomingUser);
             }
+            /*
+                if (user == null) {
+                incomingUser.setId(null);
+                getEntityManager().
+                user = findByEmail(incomingUser);
+            }*/
 
             JWT jwt = new JWT();
             jwt.setIssuer("iweb-auth");
@@ -152,14 +172,18 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
             String sessionToken = JWT.getEncoder().encode(jwt, getPolicy().signer);
 
+            System.out.println("Session token:" + sessionToken);
             //Crear la respuesta.
             resp.withAttribute("token", sessionToken)
                     .withComposedAttribute(new SingleEntryAttribute("user", user, "Userinfo"))
                     .withStatus(Response.Status.OK)
                     .withAttribute("role", user.getRole());
 
-        } catch (Exception e) {
-            return resp.isSuccessful(false).withStatus(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (PersistenceException e) {
+            return resp.isSuccessful(false)
+                    .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
+                    .withComposedAttribute(new ErrorAttribute().withCause(e.getMessage()))
+                    .build();
         }
 
         return resp.build();
@@ -172,7 +196,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         String name = (String) payload.get("name");
         String pictureUrl = (String) payload.get("picture");
 
-        user = new Userinfo(-1, name, email);
+        user = new Userinfo(0, name, email);
         user.setPicture(pictureUrl);
 
         if (user.getName() == null || user.getEmail() == null) {
@@ -194,7 +218,22 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         TypedQuery tq;
         tq = em.createNamedQuery("Userinfo.findByEmail", Userinfo.class);
         tq.setParameter("email", uinfo.getEmail());
-        return (Userinfo) tq.getSingleResult();
+        try {
+            return (Userinfo) tq.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+
+    }
+
+    private Userinfo register(Userinfo uinfo) {
+        try {
+            getEntityManager().persist(uinfo);
+            return findByEmail(uinfo);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return uinfo;
+        }
     }
 
     @Override
