@@ -15,7 +15,7 @@ const WithWidth = toRenderProps(withWidth());
 
 function GridSeries(props) {
     const { classes, series, currentUser } = props;
-
+    console.log(series)
     
     return (
         <WithWidth> 
@@ -43,12 +43,12 @@ function GridSeries(props) {
                 </GridListTile>
                 {series.map(serie => (
                     <GridListTile key={serie.id}>
-                        <img src={serie.img} alt={serie.name} />
+                        <img src={serie.picture} alt={serie.title} />
                         <GridListTileBar
-                            title={serie.name}
-                            subtitle={<span>by: {serie.author}. Score: {serie.score}</span>}
+                            title={serie.title}
+                            subtitle={<span>by: {serie.author.fullname}. Score: {serie.score}</span>}
                             actionIcon={
-                                <SeriePopover serie={serie} isOwner={currentUser.email ===serie.author}/>
+                                <SeriePopover serie={serie} isOwner={currentUser.email ===serie.author.email}/>
                             }>
                         </GridListTileBar>
                     </GridListTile>
