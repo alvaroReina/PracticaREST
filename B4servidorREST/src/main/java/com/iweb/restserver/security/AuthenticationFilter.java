@@ -32,7 +32,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-       
+        
+       /*
         String token = requestContext.getHeaderString(AUTH_TOKEN);
         if (token == null || "".equals(token)) {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
@@ -48,7 +49,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
             return;
         }
-        
+        */
     }
 
     

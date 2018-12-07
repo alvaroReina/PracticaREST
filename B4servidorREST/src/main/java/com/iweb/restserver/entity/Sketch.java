@@ -10,6 +10,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,12 +57,9 @@ public class Sketch implements Serializable {
     @Column(name = "SCORE")
     private Integer score;
     @JoinColumn(name = "IDSERIE", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Serie idserie;
-    @Size(max = 256)
-    @Column(name = "picture")
-    private String picture;
-    
+
     public Sketch() {
     }
 
@@ -112,14 +110,6 @@ public class Sketch implements Serializable {
 
     public void setIdserie(Serie idserie) {
         this.idserie = idserie;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     @Override

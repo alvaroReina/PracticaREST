@@ -5,12 +5,17 @@
  */
 package com.iweb.restserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -31,36 +36,41 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Userinfo.findAll", query = "SELECT u FROM Userinfo u")
     , @NamedQuery(name = "Userinfo.findById", query = "SELECT u FROM Userinfo u WHERE u.id = :id")
-    , @NamedQuery(name = "Userinfo.findByName", query = "SELECT u FROM Userinfo u WHERE u.name = :name")
+    , @NamedQuery(name = "Userinfo.findByFullname", query = "SELECT u FROM Userinfo u WHERE u.fullname = :fullname")
     , @NamedQuery(name = "Userinfo.findByEmail", query = "SELECT u FROM Userinfo u WHERE u.email = :email")
-    , @NamedQuery(name = "Userinfo.findByRole", query = "SELECT u FROM Userinfo u WHERE u.role = :role")})
+    , @NamedQuery(name = "Userinfo.findByUserrole", query = "SELECT u FROM Userinfo u WHERE u.userrole = :userrole")
+    , @NamedQuery(name = "Userinfo.findByPicture", query = "SELECT u FROM Userinfo u WHERE u.picture = :picture")})
 public class Userinfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "FULLNAME")
+    private String fullname;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 256)
     @Column(name = "EMAIL")
     private String email;
-    @Size(max = 16)
-    @Column(name = "ROLE")
-    private String role;
-    @Size(max = 256)
-    @Column(name = "picture")
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 16)
+    @Column(name = "USERROLE")
+    private String userrole;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 256)
+    @Column(name = "PICTURE")
     private String picture;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Collection<Serie> serieCollection;
 
     public Userinfo() {
@@ -70,10 +80,12 @@ public class Userinfo implements Serializable {
         this.id = id;
     }
 
-    public Userinfo(Integer id, String name, String email) {
+    public Userinfo(Integer id, String fullname, String email, String userrole, String picture) {
         this.id = id;
-        this.name = name;
+        this.fullname = fullname;
         this.email = email;
+        this.userrole = userrole;
+        this.picture = picture;
     }
 
     public Integer getId() {
@@ -84,12 +96,12 @@ public class Userinfo implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFullname() {
+        return fullname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
     public String getEmail() {
@@ -100,12 +112,12 @@ public class Userinfo implements Serializable {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
+    public String getUserrole() {
+        return userrole;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setUserrole(String userrole) {
+        this.userrole = userrole;
     }
 
     public String getPicture() {
@@ -116,8 +128,6 @@ public class Userinfo implements Serializable {
         this.picture = picture;
     }
 
-    
-    
     @XmlTransient
     public Collection<Serie> getSerieCollection() {
         return serieCollection;
