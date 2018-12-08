@@ -6,6 +6,7 @@
 package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Sketch;
+import java.sql.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -41,6 +42,11 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Sketch entity) {
+        
+        
+        entity.setCreatedat(new Date(System.currentTimeMillis()));
+        System.out.println("I dunot");
+        
         super.create(entity);
     }
 

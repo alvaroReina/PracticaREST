@@ -40,14 +40,20 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @POST
     @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public void create(Serie entity) {
+        
+        if (entity.getPicture() == null || "".equals(entity.getPicture()))
+            entity.setPicture("DEFAULTO");
+        
+        
+        
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Serie entity) {
         super.edit(entity);
     }
@@ -60,7 +66,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @GET
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public Serie find(@PathParam("id") Integer id) {
         Serie s = super.find(id);
         Integer v = s.getViews() + 1;
@@ -70,7 +76,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @GET
     @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public List<Serie> findAll() {
         return super.findAll();
     }
@@ -83,10 +89,10 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     }
 
     @GET
-    @Path("top")    
+    @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Serie> topScore() {       
-        Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
+    public List<Serie> topScore() {
+        Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
         q.setMaxResults(5);
         return q.getResultList();
     }
@@ -95,7 +101,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("mostviewed")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Serie> mostViewed() {
-        Query q =em.createQuery("SELECT s FROM Serie s ORDER By s.views DESC");
+        Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.views DESC");
         q.setMaxResults(5);
         return q.getResultList();
     }
@@ -109,23 +115,23 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         if (from == null || to == null) {
             throw new RuntimeException("Null filter");
         }
-        
+
         Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title BETWEEN :from AND :to LIKE :%title%");
         q.setParameter("from", from);
         q.setParameter("to", to);
-        q.setParameter("tittle", "%"+title+"%");
-        return q.getResultList();  
+        q.setParameter("tittle", "%" + title + "%");
+        return q.getResultList();
     }
 
     @GET
     @Path("{id}/sketches")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> getSerieSketches(@PathParam("id") Integer serieID) {
-        Query q =em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
+        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
         q.setParameter("serieID", serieID);
         return q.getResultList();
     }
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;

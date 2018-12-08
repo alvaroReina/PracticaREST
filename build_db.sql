@@ -29,7 +29,7 @@ create table Sketch (
 idserie integer not null,
 id integer not null generated always as identity (START WITH 1, INCREMENT BY 1),
 title varchar(50) not null,
-createdAt date default CURRENT_DATE,
+createdAt date not null with default CURRENT_DATE,
 score integer default 0,
 CONSTRAINT Sketch_pk PRIMARY KEY (id),
 FOREIGN KEY (idserie) REFERENCES Serie(id) ON DELETE CASCADE

@@ -198,7 +198,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON })
     @Path("users/{id}")
     @RequireAuthentication
     public Userinfo findByID(@PathParam("id") Integer id) {
@@ -232,14 +232,14 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     
     @POST
     @Override
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({  MediaType.APPLICATION_JSON})
     public void create(Userinfo entity) {
         super.create(entity);
     }
 
     @PUT
     @Path("{id}")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({  MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Integer id, Userinfo entity) {
         super.edit(entity);
     }
@@ -252,21 +252,21 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
 
     @GET
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({  MediaType.APPLICATION_JSON})
     public Userinfo find(@PathParam("id") Integer id) {
         return super.find(id);
     }
 
     @GET
     @Override
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({  MediaType.APPLICATION_JSON})
     public List<Userinfo> findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({  MediaType.APPLICATION_JSON})
     public List<Userinfo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
