@@ -110,7 +110,7 @@ public class Sketch implements Serializable {
 
     public void setIdserie(Serie idserie) {
         this.idserie = idserie;
-    }
+    }    
 
     @Override
     public int hashCode() {

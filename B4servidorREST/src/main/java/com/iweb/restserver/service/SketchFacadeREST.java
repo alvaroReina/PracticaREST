@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -88,14 +89,18 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> topScore() {
-        return null;
+        Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.score DESC");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET
     @Path("latest")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> latest() {
-        return null;
+        Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.createdat DESC");
+        q.setMaxResults(5);
+        return q.getResultList();
     }
 
     @GET
@@ -103,8 +108,16 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<Sketch> findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
-        return null;
+        if (from == null || to == null) {
+            throw new RuntimeException("Null date");
+        }
+        
+        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
+        q.setParameter("from", from);
+        q.setParameter("to", to);
+        return q.getResultList();    
     }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
