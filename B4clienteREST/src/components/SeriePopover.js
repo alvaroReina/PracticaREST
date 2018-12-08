@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import {Button} from '@material-ui/core';
-
+import {Link} from 'react-router-dom';
 
 const styles = theme => ({
     icon: {
@@ -87,7 +87,7 @@ class SeriePopover extends React.Component {
                         horizontal: 'center',
                     }}
                 >
-                    <Button onClick={this.view} color='primary' variant='text'>
+                    <Button component={Link} to={'/series/' + this.props.serie.id} color='primary' variant='text'>
                         View
                     </Button>
                     {isOwner && <Button onClick={this.edit} color='default' variant='text'>Edit</Button>}
