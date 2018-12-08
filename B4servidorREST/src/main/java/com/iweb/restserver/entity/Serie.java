@@ -69,6 +69,9 @@ public class Serie implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie", fetch = FetchType.LAZY)
     @JsonManagedReference
     private Collection<Sketch> sketchCollection;
+    @Size(max = 256)
+    @Column(name = "picture")
+    private String picture;
 
     public Serie() {
     }
@@ -129,6 +132,14 @@ public class Serie implements Serializable {
 
     public void setAuthor(Userinfo author) {
         this.author = author;
+    }
+    
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     @XmlTransient
