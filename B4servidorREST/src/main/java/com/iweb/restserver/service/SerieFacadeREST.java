@@ -157,8 +157,12 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public Response countREST() {
+        RestResponse resp = new RestResponse(true);
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK)       
+                    .withAttribute("value", String.valueOf(super.count()));
+        return resp.build();
     }
 
     @GET
