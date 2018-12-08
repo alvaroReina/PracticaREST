@@ -5,8 +5,10 @@
  */
 package com.iweb.restserver.service;
 
+import com.iweb.restserver.response.RestResponse;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -22,8 +24,10 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
-    public void create(T entity) {
+    public Response create(T entity) {
+        RestResponse resp = new RestResponse(true);
         getEntityManager().persist(entity);
+        return resp.build();
     }
 
     public void edit(T entity) {
@@ -38,10 +42,13 @@ public abstract class AbstractFacade<T> {
         return getEntityManager().find(entityClass, id);
     }
 
-    public List<T> findAll() {
+    public Response findAll() {
+        RestResponse resp = new RestResponse(true);
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK).withAttribute("list", getEntityManager().createQuery(cq).getResultList());                  
+        return resp.build();
     }
 
     public List<T> findRange(int[] range) {

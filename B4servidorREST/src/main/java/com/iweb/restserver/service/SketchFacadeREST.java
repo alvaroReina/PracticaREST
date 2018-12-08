@@ -45,53 +45,144 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Sketch entity) {
-                
-        entity.setCreatedat(new Date(System.currentTimeMillis()));
-        entity.setScore(5);
+    public Response create(Sketch entity) {
         
+        RestResponse resp = new RestResponse(true);
+        
+        if (entity.getIdserie() == null && "".equals(entity.getTitle())){
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("IDSERIE or title not present");
+            err.withHint("Please, insert IDSERIE or title first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+        
+        entity.setCreatedat(new Date(System.currentTimeMillis()));
+        entity.setScore(5);        
         super.create(entity);
+        
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK);        
+               
+        return resp.build();
+        
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Sketch entity) {
+    public Response edit(@PathParam("id") Integer id, Sketch entity) {
+        
+        RestResponse resp = new RestResponse(true);
+        
+        if (id == null){
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
         super.edit(entity);
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK);        
+               
+        return resp.build();
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
+    public Response remove(@PathParam("id") Integer id) {
+        
+        RestResponse resp = new RestResponse(true); 
+         
+        if (id == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+            super.remove(super.find(id));
+            resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK);
+        
+               
+        return resp.build();
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Sketch find(@PathParam("id") Integer id) {
-        return super.find(id);
+    public Response find(@PathParam("id") Integer id) {
+        
+        RestResponse resp = new RestResponse(true); 
+         
+        if (id == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+            super.find(id);
+            resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK);        
+               
+        return resp.build();
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Sketch> findAll() {
+    public Response findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Sketch> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+    public Response findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
+        
+        RestResponse resp = new RestResponse(true); 
+         
+        if (from == null || to == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Range not present");
+            err.withHint("Please, insert range first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+            super.findRange(new int[]{from, to});
+            resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK);        
+               
+        return resp.build();
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public Response countREST() {
+        RestResponse resp = new RestResponse(true);
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK)       
+                    .withAttribute("value", String.valueOf(super.count()));
+        return resp.build();
     }
     
     @GET
@@ -136,6 +227,8 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         
         if (from == null || to == null) {
             ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Range not present");
+            err.withHint("Please, insert range first");
             return resp
                     .isSuccessful(false)
                     .withComposedAttribute(err)
