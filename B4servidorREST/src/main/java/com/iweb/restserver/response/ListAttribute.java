@@ -15,44 +15,50 @@ import java.util.Map;
  *
  * @author jose
  */
-public class ListAttribute extends Attribute{
-    
+public class ListAttribute extends Attribute {
+
     private List elements;
     private String type;
-    
+
     public ListAttribute() {
         this("list");
     }
-        
+
     public ListAttribute(String name) {
         super(name);
         this.elements = new ArrayList<>();
         this.type = "any";
     }
-    
+
     public ListAttribute of(String elementType) {
         this.type = elementType;
         return this;
     }
-   
-    
-   /**
-    * Overrides the existing elements!
+
+    /**
+     * Overrides the existing elements!
+     *
      * @param elements
-     * @return 
-    */
+     * @return
+     */
     public ListAttribute withElements(List<Object> elements) {
         this.elements.clear();
         this.elements.addAll(elements);
         return this;
     }
-    
-     /**
-    * Overrides the existing elements!
+
+    /**
+     * Overrides the existing elements!
+     *
      * @param elements
-     * @return 
-    */
+     * @return
+     */
     public ListAttribute withElements(Object[] elements) {
+
+        if (elements == null) {
+            return this;
+        }
+
         this.elements.clear();
         this.elements.addAll(Arrays.asList(elements));
         return this;
@@ -62,31 +68,34 @@ public class ListAttribute extends Attribute{
         this.elements.add(o);
         return this;
     }
-    
+
     public ListAttribute addElements(List<Object> elements) {
-        this.elements.addAll(elements);
+
+        if (elements != null) {
+            this.elements.addAll(elements);
+        }
         return this;
     }
-    
-    
+
     public ListAttribute addElements(Object[] elements) {
-        this.elements.addAll(Arrays.asList(elements));
+        if (elements != null) {
+            this.elements.addAll(Arrays.asList(elements));
+        }
         return this;
     }
-    
-    
+
     @Override
     public Map<String, Object> pack() {
-        
-        Map<String,Object> map = new HashMap<>();
-        if (type == null){
+
+        Map<String, Object> map = new HashMap<>();
+        if (type == null) {
             type = "any";
         }
         map.put("size", this.elements.size());
-        map.put("type", type); 
+        map.put("type", type);
         map.put("elements", this.elements);
-        
+
         return map;
     }
-    
+
 }

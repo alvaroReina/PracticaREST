@@ -12,6 +12,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.exceptions.ValidationException;
 import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
 import com.iweb.restserver.response.SingleEntryAttribute;
 import com.iweb.restserver.security.RequireAuthentication;
@@ -41,6 +42,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.Response.Status.*;
+import static com.iweb.restserver.response.ResponseFactory.*;
+import javax.json.stream.JsonParsingException;
 
 /**
  *
@@ -86,19 +90,8 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
     @Produces({MediaType.APPLICATION_JSON})
     public Response signin(@FormParam("Gtoken") String tokenID) {
 
-        System.out.println("Gtoken:" + tokenID);
-
-        RestResponse resp = new RestResponse(true);
-
         if (tokenID == null || "".equals(tokenID)) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Google token ID not present");
-            err.withHint("Please, log in with Google first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "Google token ID not present", null, "Please, log in with Google first").build();
         }
 
         GoogleIdToken googleDecoded;
@@ -106,54 +99,33 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             googleDecoded = GOOGLE_VERIFIER.verify(tokenID);
         } catch (GeneralSecurityException ex) {
             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-            return resp
-                    .isSuccessful(false)
-                    .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
-                    .withAttribute("exception", ex)
-                    .build();
-        } catch (IOException ex) {
+            return newError(INTERNAL_SERVER_ERROR, "Security violation attempt").build();
+           
+        } catch (Exception ex) { //NEVER REPLACE WITH IOException IllegalArgumenException can be thrown
             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-            return resp.isSuccessful(false)
-                    .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
-                    .withComposedAttribute(new ErrorAttribute().withCause("malformed token"))
-                    .build();
+            return newError(INTERNAL_SERVER_ERROR, "malformed token").build();
         }
 
         if (googleDecoded == null) {
-            ErrorAttribute attr = new ErrorAttribute()
-                    .withCause("invalid token")
-                    .withHint("obtain a valid one");
-            return resp.isSuccessful(false)
-                    .withComposedAttribute(attr)
-                    .withStatus(Response.Status.UNAUTHORIZED)
-                    .build();
+            return newError(UNAUTHORIZED, "invalid token").build();
         }
 
         GoogleIdToken.Payload payload = googleDecoded.getPayload();
-
         Userinfo incomingUser;
 
         try {
             incomingUser = extractUser(payload);
         } catch (ValidationException ex) {
-            return resp.isSuccessful(false)
-                    .withComposedAttribute(new ErrorAttribute().withCause(ex.getMessage()))
-                    .withStatus(Response.Status.UNAUTHORIZED)
-                    .build();
+             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+            return newError(UNAUTHORIZED, "invalid token").build();
         }
 
         try {
             Userinfo user = findByEmail(incomingUser);
             if (user == null) {
+                incomingUser.setUserrole("USER");
                 user = register(incomingUser);
             }
-            
-            /*
-                if (user == null) {
-                incomingUser.setId(null);
-                getEntityManager().
-                user = findByEmail(incomingUser);
-            }*/
 
             JWT jwt = new JWT();
             jwt.setIssuer("iweb-auth");
@@ -164,20 +136,15 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             jwt.setExpiration(ZonedDateTime.now().plusWeeks(1));
 
             String sessionToken = JWT.getEncoder().encode(jwt, getPolicy().signer);
-            //Crear la respuesta.
-            resp.withAttribute("session-token", sessionToken)
-                    .withComposedAttribute(new SingleEntryAttribute("user", user, "Userinfo"))
-                    .withStatus(Response.Status.OK)
-                    .withAttribute("role", user.getUserrole());
-
-        } catch (PersistenceException e) {
-            return resp.isSuccessful(false)
-                    .withStatus(Response.Status.INTERNAL_SERVER_ERROR)
-                    .withComposedAttribute(new ErrorAttribute().withCause(e.getMessage()))
+            return newSingleEntity(user, "user", "Userinfo")
+                    .withAttribute("session-token", sessionToken)
                     .build();
-        }
 
-        return resp.build();
+
+        } catch (PersistenceException | JsonParsingException ex) {
+             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+            return newError(INTERNAL_SERVER_ERROR, "We could retrieve your information").build();
+        }
     }
 
     private Userinfo extractUser(GoogleIdToken.Payload payload) {
