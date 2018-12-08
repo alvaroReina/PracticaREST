@@ -7,10 +7,9 @@ package com.iweb.restserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,7 +20,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,7 +30,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author jose
  */
 @Entity
-@Table(name = "SERIE")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Serie.findAll", query = "SELECT s FROM Serie s")
@@ -47,31 +44,23 @@ public class Serie implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
-    @Column(name = "TITLE")
     private String title;
-    @Column(name = "SCORE")
     private Integer score;
-    @Column(name = "VIEWS")
     private Integer views;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 256)
-    @Column(name = "PICTURE")
     private String picture;
     @JoinColumn(name = "AUTHOR", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Userinfo author;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie", fetch = FetchType.LAZY)
     @JsonManagedReference
-    private Collection<Sketch> sketchCollection;
-    @Size(max = 256)
-    @Column(name = "picture")
-    private String picture;
+    private List<Sketch> sketchList;
 
     public Serie() {
     }
@@ -133,22 +122,14 @@ public class Serie implements Serializable {
     public void setAuthor(Userinfo author) {
         this.author = author;
     }
-    
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     @XmlTransient
-    public Collection<Sketch> getSketchCollection() {
-        return sketchCollection;
+    public List<Sketch> getSketchList() {
+        return sketchList;
     }
 
-    public void setSketchCollection(Collection<Sketch> sketchCollection) {
-        this.sketchCollection = sketchCollection;
+    public void setSketchList(List<Sketch> sketchList) {
+        this.sketchList = sketchList;
     }
 
     @Override
