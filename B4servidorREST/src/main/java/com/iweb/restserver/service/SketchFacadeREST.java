@@ -6,10 +6,13 @@
 package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Sketch;
+import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.RestResponse;
 import java.sql.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.ws.rs.Consumes;
@@ -22,6 +25,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -42,10 +46,9 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Sketch entity) {
-        
-        
+                
         entity.setCreatedat(new Date(System.currentTimeMillis()));
-        System.out.println("I dunot");
+        entity.setScore(5);
         
         super.create(entity);
     }
@@ -94,34 +97,60 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @GET
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Sketch> topScore() {
-        Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.score DESC");
-        q.setMaxResults(5);
-        return q.getResultList();
+    public Response topScore() {
+        
+        RestResponse resp = new RestResponse(true);
+        
+            Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.score DESC");
+            q.setMaxResults(5);
+            resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK)
+                    .withAttribute("list", q.getResultList());   
+                   
+        return resp.build();
     }
 
     @GET
     @Path("latest")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Sketch> latest() {
+    public Response latest() {
+        
+        RestResponse resp = new RestResponse(true);
+        
         Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.createdat DESC");
         q.setMaxResults(5);
-        return q.getResultList();
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK)
+                    .withAttribute("list", q.getResultList());   
+                   
+        return resp.build();
     }
 
     @GET
     @Path("betweendates")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Sketch> findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
+    public Response findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
+        
+        RestResponse resp = new RestResponse(true);
+        
         if (from == null || to == null) {
-            throw new RuntimeException("Null date");
+            ErrorAttribute err = new ErrorAttribute();
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
         }
         
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
         q.setParameter("from", from);
         q.setParameter("to", to);
-        return q.getResultList();    
+        resp.isSuccessful(true)
+                    .withStatus(Response.Status.OK)
+                    .withAttribute("list", q.getResultList());   
+                   
+        return resp.build();    
     }
     
     @Override

@@ -41,12 +41,13 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_JSON})
-    public void create(Serie entity) {
+    public void create(Serie entity) { 
         
         if (entity.getPicture() == null || "".equals(entity.getPicture()))
-            entity.setPicture("DEFAULTO");
+            entity.setPicture("assets/img/default.jpg");
         
-        
+        entity.setViews(0);        
+        entity.setScore(5);        
         
         super.create(entity);
     }
