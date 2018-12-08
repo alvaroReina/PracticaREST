@@ -82,6 +82,7 @@ public class ListAttribute extends Attribute{
         if (type == null){
             type = "any";
         }
+        map.put("size", this.elements.size());
         map.put("type", type); 
         map.put("elements", this.elements);
         
