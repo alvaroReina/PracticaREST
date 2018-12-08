@@ -90,7 +90,7 @@ class SeriePopover extends React.Component {
                     <Button component={Link} to={'/series/' + this.props.serie.id} color='primary' variant='text'>
                         View
                     </Button>
-                    {isOwner && <Button onClick={this.edit} color='default' variant='text'>Edit</Button>}
+                    {isOwner && <Button component={Link} to={'/series/' + this.props.serie.id + '/edit'} color='default' variant='text'>Edit</Button>}
                     {isOwner && <Button onClick={this.remove} color='secondary' variant='text'>Remove</Button>}
                 </Popover>
             </div>

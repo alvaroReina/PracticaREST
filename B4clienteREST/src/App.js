@@ -5,6 +5,7 @@ import SerieDetail from './components/SerieDetail'
 import Axios from 'axios';
 import { SIGNIN, SERIES } from './services/cte'
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import SerieEdit from './components/SerieEdit';
 
 
 const placeholderUser = {
@@ -106,10 +107,9 @@ class App extends Component {
        <Router>
          <div>
             <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} />  
-          
             <Switch>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
-              <Route path="/series/:id" render={(match) => <SerieDetail currentUser={this.state.user} match={match}/>}/>
+              <Route path="/series/:id" render={(props) => <SerieDetail currentUser={this.state.user} {...props}/>}/>
             </Switch>
           </div>
         </Router>
