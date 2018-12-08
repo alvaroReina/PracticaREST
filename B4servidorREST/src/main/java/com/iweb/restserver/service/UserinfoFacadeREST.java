@@ -100,7 +100,8 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         } catch (GeneralSecurityException ex) {
             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
             return newError(INTERNAL_SERVER_ERROR, "Security violation attempt").build();
-        } catch (IOException ex) {
+           
+        } catch (Exception ex) { //NEVER REPLACE WITH IOException IllegalArgumenException can be thrown
             Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
             return newError(INTERNAL_SERVER_ERROR, "malformed token").build();
         }
@@ -122,6 +123,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         try {
             Userinfo user = findByEmail(incomingUser);
             if (user == null) {
+                incomingUser.setUserrole("USER");
                 user = register(incomingUser);
             }
 
@@ -134,9 +136,10 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             jwt.setExpiration(ZonedDateTime.now().plusWeeks(1));
 
             String sessionToken = JWT.getEncoder().encode(jwt, getPolicy().signer);
-            return newSingleEntity(sessionToken, "session-token", "jwt")
-                    .withComposedAttribute(new SingleEntryAttribute("user", user, "Userinfo"))
+            return newSingleEntity(user, "user", "Userinfo")
+                    .withAttribute("session-token", sessionToken)
                     .build();
+
 
         } catch (PersistenceException | JsonParsingException ex) {
              Logger.getLogger(UserinfoFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
