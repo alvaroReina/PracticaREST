@@ -6,11 +6,8 @@
 package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Serie;
-import com.iweb.restserver.entity.Sketch;
 import com.iweb.restserver.response.ErrorAttribute;
 import com.iweb.restserver.response.RestResponse;
-import java.sql.Date;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,8 +47,8 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
         if (entity.getId() == null && "".equals(entity.getTitle())) {
             ErrorAttribute err = new ErrorAttribute();
-            err.withCause("IDSERIE or title not present");
-            err.withHint("Please, insert IDSERIE or title first");
+            err.withCause("ID or title not present");
+            err.withHint("Please, insert ID or title first");
             return resp
                     .isSuccessful(false)
                     .withComposedAttribute(err)
@@ -201,11 +198,19 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-        if (from == null || to == null || title.equals("")) {
-            throw new RuntimeException("Null filter");
-        }
-
+        
         RestResponse resp = new RestResponse(true);
+        
+        if (from == null || to == null || title.equals("")) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Null filter");
+            err.withHint("Please, insert filter first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }       
 
         Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title BETWEEN :from AND :to LIKE :%title%");
         q.setParameter("from", from);
@@ -223,11 +228,19 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("{id}/sketches")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSerieSketches(@PathParam("id") Integer serieID) {
-        if (serieID == 0 || serieID == null) {
-            throw new RuntimeException("wrong serieID");
-        }
-
+        
         RestResponse resp = new RestResponse(true);
+        
+        if (serieID == 0 || serieID == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Wrong ID");
+            err.withHint("Please, insert id first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }        
 
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
         q.setParameter("serieID", serieID);
