@@ -45,12 +45,14 @@ public class ErrorAttribute extends Attribute{
     }
     
     public ErrorAttribute withFields(String[] fields) {
-        this.fields.addAll(Arrays.asList(fields));
+        if (fields != null)
+            this.fields.addAll(Arrays.asList(fields));
         return this;
     }
     
     public ErrorAttribute withFields(List<String> fields) {
-        this.fields.addAll(fields);
+        if (fields != null) 
+            this.fields.addAll(fields);
         return this;
     }
        
