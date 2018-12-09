@@ -4,7 +4,8 @@ import { SERIES } from '../services/cte'
 import { Redirect } from 'react-router'
 import SerieEdit from './SerieEdit'
 import { Route, Link } from 'react-router-dom'
-import {Button} from '@material-ui/core';
+import {Button, Typography} from '@material-ui/core';
+import SketchesList from './SketchesList'
 
 export default class SerieDetail extends Component {
 
@@ -13,13 +14,12 @@ export default class SerieDetail extends Component {
         this.state = {
             serie: null,
             loading: true,
-            redirect: false,
+            redirect: false
         }
     }
     
     async componentDidMount() {
         let serie = await Axios(SERIES + "/" + this.props.match.params.id)
-        console.log(serie)
         if(serie.data) {
             this.setState({serie: serie.data, loading: false})
         } else {
@@ -27,7 +27,10 @@ export default class SerieDetail extends Component {
         }
     }
 
-
+    updateSerie = (serie) => {
+        this.setState({serie})
+        this.props.updateSerie(serie)
+    }
 
     render() {
         return (
@@ -38,9 +41,12 @@ export default class SerieDetail extends Component {
             </p>}
             {!this.state.loading && 
                 <div>
-                    <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} currentUser={this.props.currentUser} {...props}/> }/>
-                    {this.props.currentUser.email === this.state.serie.author.email && <Button component={Link} to={'/series/' + this.state.serie.id + '/edit'} color='default' variant='text'>Edit</Button>}
-                    <p>{this.state.serie.title}<br/>Me gustaria poder hacer una request a {SERIES}/{this.props.match.params.id}/sketches</p>
+                    <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} updateSerie={this.updateSerie} currentUser={this.props.currentUser} {...props}/> }/>
+                    <Route exact path="/series/:id" render={(props) => {return (<div>
+                        <Typography variant="h2">{this.state.serie.title}</Typography>
+                    {this.props.currentUser.email === this.state.serie.author.email && <Button component={Link} to={'/series/' + this.state.serie.id + '/edit'} color='primary' variant='contained'>Edit</Button>}
+                    </div>)}}/>
+                    <SketchesList serie={this.state.serie}/>
                 </div>}
         </div>
         )

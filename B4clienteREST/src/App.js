@@ -97,8 +97,13 @@ class App extends Component {
     this.setState({ logged: false, user: placeholderUser, sessionToken: undefined })
   }
 
-  removeData = () => {
-    this.setState({data: []})
+  updateSerie = (serie) => {
+    let series = this.state.series
+    let i = series.findIndex((s) => s.id === serie.id)
+    if(i >= 0) {
+      series[i] = serie
+    }
+    this.setState({series})
   }
 
   render() {
@@ -108,8 +113,9 @@ class App extends Component {
          <div>
             <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} />  
             <Switch>
+              <Route path="/series/new" render={() => <SerieNew currentUser={this.state.user} logged={this.state.logged}/>}/>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
-              <Route path="/series/:id" render={(props) => <SerieDetail currentUser={this.state.user} {...props}/>}/>
+              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} {...props}/>}/>
             </Switch>
           </div>
         </Router>
