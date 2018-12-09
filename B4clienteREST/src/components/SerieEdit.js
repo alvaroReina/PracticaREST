@@ -51,13 +51,15 @@ class SerieEdit extends Component {
         this.setState({picture: event.target.value})
     }
 
-    handleSubmit = () => {
+     handleSubmit = () => {
         let serie = this.props.serie
         serie.title = this.state.title
         serie.picture = this.state.picture
         this.props.updateSerie(serie)
-        Axios.put(`${SERIES}/${serie.id}`, serie).then((response) => {console.log(response)})
-        this.setState({redirect: true})
+        Axios.put(`${SERIES}/${serie.id}`, serie).then((response) => {
+            this.setState({redirect: true})
+        })
+        
 
     }
 

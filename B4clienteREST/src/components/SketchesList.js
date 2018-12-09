@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import Axios from 'axios'
 import {SERIES} from '../services/cte'
-import Sketch from './Sketch'
 import {Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography} from '@material-ui/core'
 
 export default class SketchesList extends Component {

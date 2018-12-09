@@ -5,7 +5,7 @@ import SerieDetail from './components/SerieDetail'
 import Axios from 'axios';
 import { SIGNIN, SERIES } from './services/cte'
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-import SerieEdit from './components/SerieEdit';
+import SerieNew from './components/SerieNew';
 
 
 const placeholderUser = {
