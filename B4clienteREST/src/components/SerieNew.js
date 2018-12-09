@@ -91,7 +91,9 @@ class SerieNew extends Component {
     }
 
     try {
-      let resp = await Axios.post(SERIES, {title,picture, score, author: {id: currentUser.id}})
+      let resp = await Axios.post(SERIES, {title,picture, score, author: {id: currentUser.id}});
+      console.log(resp);
+      resp = resp.data;
       if (resp.ok) {
         this.setState({redirect: true})
       } else {

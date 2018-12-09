@@ -38,8 +38,14 @@ class App extends Component {
       localStorage.removeItem("session-token");
       localStorage.removeItem("userinfo");
     }
+
     let response = await Axios.get(SERIES)
-    this.setState({series: response.data})
+    let series = [];
+    if (response.data.ok)
+      series = response.data.list.elements;
+
+    console.log(response);
+    this.setState({series: series})
   }
 
   async login(gtoken, user) {

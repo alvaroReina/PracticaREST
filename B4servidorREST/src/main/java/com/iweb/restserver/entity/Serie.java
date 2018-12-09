@@ -5,6 +5,7 @@
  */
 package com.iweb.restserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.List;
@@ -59,7 +60,7 @@ public class Serie implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Userinfo author;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie", fetch = FetchType.LAZY)
-    @JsonManagedReference
+    //@JsonManagedReference
     private List<Sketch> sketchList;
 
     public Serie() {
@@ -124,6 +125,7 @@ public class Serie implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Sketch> getSketchList() {
         return sketchList;
     }

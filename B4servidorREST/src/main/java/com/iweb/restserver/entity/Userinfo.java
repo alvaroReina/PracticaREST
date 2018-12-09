@@ -6,11 +6,13 @@
 package com.iweb.restserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -59,8 +61,7 @@ public class Userinfo implements Serializable {
     @NotNull
     @Size(min = 1, max = 256)
     private String picture;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
-    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author", fetch = FetchType.LAZY)
     private List<Serie> serieList;
 
     public Userinfo() {
@@ -119,6 +120,7 @@ public class Userinfo implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Serie> getSerieList() {
         return serieList;
     }

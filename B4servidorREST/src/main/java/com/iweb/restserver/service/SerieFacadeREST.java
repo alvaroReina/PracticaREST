@@ -7,6 +7,7 @@ package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Serie;
 import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -45,26 +46,20 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     public Response create(Serie entity) {
         RestResponse resp = new RestResponse(true);
 
-        if (entity.getId() == null && "".equals(entity.getTitle())) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID or title not present");
-            err.withHint("Please, insert ID or title first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        entity.setId(0);
+
+        if ("".equals(entity.getTitle())) {
+            return ResponseFactory.newError(Response.Status.BAD_REQUEST, "Title required").build();
         } else if (entity.getPicture() == null || "".equals(entity.getPicture())) {
             entity.setPicture("assets/img/default.jpg");
         }
 
         entity.setViews(0);
-        entity.setScore(5);
+        if (entity.getScore() == null) {
+            entity.setScore(5);
+        }
+        
         super.create(entity);
-
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK);
-
         return resp.build();
 
     }
@@ -132,16 +127,11 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         }
 
         Serie s = super.find(id);
-        Integer v = s.getViews() + 1;
-        s.setViews(v);
-        Query q = em.createQuery("UPDATE Serie SET views =: v WHERE id =: id");
-        q.setParameter("v", v);
-        q.setParameter("id", id);
-
+        s.setViews(s.getViews() + 1);
+        getEntityManager().merge(s);
         resp.isSuccessful(true)
                 .withStatus(Response.Status.OK);
-
-        return resp.build();
+        return ResponseFactory.newSingleEntity(s, "serie").build();
     }
 
     @GET
@@ -157,8 +147,8 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     public Response countREST() {
         RestResponse resp = new RestResponse(true);
         resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK)       
-                    .withAttribute("value", String.valueOf(super.count()));
+                .withStatus(Response.Status.OK)
+                .withAttribute("value", String.valueOf(super.count()));
         return resp.build();
     }
 
@@ -198,9 +188,9 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-        
+
         RestResponse resp = new RestResponse(true);
-        
+
         if (from == null || to == null || title.equals("")) {
             ErrorAttribute err = new ErrorAttribute();
             err.withCause("Null filter");
@@ -210,27 +200,31 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
                     .withComposedAttribute(err)
                     .withStatus(Response.Status.BAD_REQUEST)
                     .build();
-        }       
+        }
 
-        Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title BETWEEN :from AND :to LIKE :%title%");
-        q.setParameter("from", from);
-        q.setParameter("to", to);
-        q.setParameter("tittle", "%" + title + "%");
+        Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title LIKE :title");
 
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK)
-                .withAttribute("list", q.getResultList());
+        if (from >= 0) {
+            q.setFirstResult(from);
+        }
 
-        return resp.build();
+        if (from > 0 && to > 0) {
+            q.setMaxResults(Math.abs(from - to));
+        } else {
+            q.setMaxResults(25);
+        }
+
+        q.setParameter("title", "%" + title + "%");
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @GET
     @Path("{id}/sketches")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSerieSketches(@PathParam("id") Integer serieID) {
-        
+
         RestResponse resp = new RestResponse(true);
-        
+
         if (serieID == 0 || serieID == null) {
             ErrorAttribute err = new ErrorAttribute();
             err.withCause("Wrong ID");
@@ -240,15 +234,11 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
                     .withComposedAttribute(err)
                     .withStatus(Response.Status.BAD_REQUEST)
                     .build();
-        }        
+        }
 
-        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
+        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie.id = :serieID");
         q.setParameter("serieID", serieID);
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK)
-                .withAttribute("list", q.getResultList());
-
-        return resp.build();
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @Override

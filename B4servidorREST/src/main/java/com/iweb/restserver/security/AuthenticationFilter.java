@@ -30,29 +30,28 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     public static final String AUTH_TOKEN = "Authorization";
 
+    
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        
-       /*
+
+        /*
         String token = requestContext.getHeaderString(AUTH_TOKEN);
         if (token == null || "".equals(token)) {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
             return;
         }
-        
+
         SignaturePolicy pcy = SignaturePolicy.PCYS.get("session-token");
-        
+
         try {
-            JWT jwt = JWT.getDecoder().decode(token,pcy.verifier);    
-            System.out.println("Funcionó: " + jwt.issuer );
-        } catch(InvalidJWTSignatureException ex) {
+            JWT jwt = JWT.getDecoder().decode(token, pcy.verifier);
+            System.out.println("Funcionó: " + jwt.issuer);
+        } catch (InvalidJWTSignatureException ex) {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
             return;
-        }
-        */
+        }*/
     }
 
-    
     /* Ejemplo código
         
     Signer signer = HMACSigner.newSHA256Signer("secret");
@@ -71,6 +70,5 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             requestContext.abortWith(RESP_UNAUTHORIZED.build());
         }
 
-    */
-    
+     */
 }

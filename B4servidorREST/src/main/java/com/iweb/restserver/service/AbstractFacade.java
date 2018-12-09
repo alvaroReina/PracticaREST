@@ -5,6 +5,7 @@
  */
 package com.iweb.restserver.service;
 
+import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -43,12 +44,10 @@ public abstract class AbstractFacade<T> {
     }
 
     public Response findAll() {
-        RestResponse resp = new RestResponse(true);
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
-        resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK).withAttribute("list", getEntityManager().createQuery(cq).getResultList());                  
-        return resp.build();
+        List<Object> list =  getEntityManager().createQuery(cq).getResultList();
+        return ResponseFactory.newList(list).build();
     }
 
     public List<T> findRange(int[] range) {
