@@ -78,10 +78,11 @@ const styles = theme => ({
         return;
       }
       try {
-        let resp = await Axios.put(`${SKETCHES}/${this.props.sketch.id}`, {id: this.props.sketch.id, title,createdat, score, idserie: {id: this.props.serieId}}, {headers: {'Authorization': localStorage.getItem("session-token")}});
-        console.log(resp)
+        let sketch = {id: this.props.sketch.id, title,createdat: new Date(createdat), score, idserie: {id: this.props.serieId}}
+        let resp = await Axios.put(`${SKETCHES}/${this.props.sketch.id}`, sketch , {headers: {'Authorization': localStorage.getItem("session-token")}});
         resp = resp.data;
         if (resp.ok) {
+          this.props.updateSketch(sketch)
           this.setState({redirect: true})
         } else {
           this.notify(`Oops: ${JSON.stringify(resp.error)}`)
@@ -90,6 +91,7 @@ const styles = theme => ({
         console.log(err);
         this.notify("Something went wrong")
       }
+      this.props.close()
     }
   
     notify = (msg) => {

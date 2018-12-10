@@ -48,6 +48,14 @@ export default class SketchesList extends Component {
             console.log(err);
         }
     }
+    updateSketch = (sketch) => {
+        let sketches = this.state.sketches
+        let i = sketches.findIndex((s) => s.id === sketch.id)
+        if(i >= 0) {
+          sketches[i] = sketch
+        }
+        this.setState({sketches})
+      }
 
     render() {
         return (
@@ -80,7 +88,7 @@ export default class SketchesList extends Component {
 
                                             </TableCell>}
                                             {this.props.isOwner && <TableCell>                                                
-                                                <Popup modal trigger={<Button variant="contained" color="primary">EDIT</Button>}><div><SketchEdit serieId={this.props.serie.id} sketch={s}/></div></Popup>
+                                                <Popup modal trigger={<Button variant="contained" color="primary">EDIT</Button>}>{close => <SketchEdit updateSketch={this.updateSketch} serieId={this.props.serie.id} sketch={s} close={close}/>}</Popup>
                                                 <Button variant='contained' color='secondary' onClick={() => { this.deleteSketch(s.id) }}>DELETE</Button>
                                             </TableCell>}
                                         </TableRow>
