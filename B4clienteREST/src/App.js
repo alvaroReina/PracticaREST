@@ -121,7 +121,7 @@ class App extends Component {
             <Switch>
               <Route path="/series/new" render={() => <SerieNew currentUser={this.state.user} logged={this.state.logged}/>}/>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
-              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} {...props}/>}/>
+              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
             </Switch>
           </div>
         </Router>

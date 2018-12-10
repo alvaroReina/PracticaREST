@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
-import {Button} from '@material-ui/core';
+import {Button, Grid, Typography} from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Axios from 'axios'
@@ -23,50 +23,154 @@ const styles = theme => ({
     menu: {
       width: 200,
     },
+    card: {
+      maxWidth: 600,
+      minWidth: 345,
+    },
+    media: {
+      height: 300,
+    }, grow: {
+      flexGrow: 1,
+    },
+    middleElem: {
+      marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit * 2
+    }
   });
   
-
-class SketchNew extends Component {
-    constructor(props){
-        super(props)
-        this.state = {
-            title: "",
-            createdAt: new Date().toLocaleTimeString(),
-            score:"",
-            redirect: false
-        }
+  class SketchNew extends Component {
+  
+    constructor(props) {
+      super(props)
+      this.state = {
+        title: "",
+        createdat: new Date(),
+        score: "",
+        redirect: false,
+      }
+  
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.validate = this.validate.bind(this);
     }
-
+  
     componentDidMount() {
-        this.setState({
-            title: this.props.serie.title,
-            picture: this.props.serie.picture
-        })
+  
+      if (!this.props.currentUser) {
+        alert('no author!');
+      }
     }
-
-    handleTitle = (event) => {
-        this.setState({title: event.target.value})
+  
+    validate = () => {
+      let {title, date, score} = this.state;
+  
+      let okTitle = title && title.trim().length > 0;
+      let okScore = score && !isNaN(Number.parseFloat(score));
+  
+      return (okTitle && okScore);
     }
-
-    handlePicture = (event) => {
-        this.setState({picture: event.target.value})
+  
+    handleChange = name => event => {
+      this.setState({
+        [name]: event.currentTarget.value,
+      })
     }
-
-     handleSubmit = () => {
-        alert('submit');
+  
+    handleSubmit = async () => {
+      let {currentUser} = this.props;
+      let { title, createdat, score } = this.state;
+      if (!this.validate()) {
+        this.notify('verify all the data before submit')
+        return;
+      }
+  
+      try {
+        let resp = await Axios.post(SKETCHES, {title,createdat, score, idserie: {id: this.props.match.params.id}}, {headers: {'Authorization': localStorage.getItem("session-token")}});
+        resp = resp.data;
+        if (resp.ok) {
+          this.setState({redirect: true})
+        } else {
+          this.notify(`Oops: ${JSON.stringify(resp.error)}`)
+        }
+      } catch(err) {
+        console.log(err);
+        this.notify("Something went wrong")
+      }
     }
-
+  
+    notify = (msg) => {
+      alert(msg);
+    }
+  
     render() {
-        let { classes } = this.props
-        return (
-        <form className={classes.container}>
-            {this.state.redirect && <Redirect to={`/series/${this.props.serie.id}`}/>}
-            <TextField className={classes.textField} id="title" label="Title" placeholder="Title" value={this.state} onChange={this.handleTitle} margin="normal" />
-            <TextField className={classes.textField} id="picture" label="Picture" placeholder="Picture Url"  margin="normal" />
-            <TextField className={classes.textField} id="picture" label="score" type="number" placeholder="score" margin="normal" />
-        </form>
-        )
+      const { classes, currentUser } = this.props;
+      let valid = this.validate();
+      return (
+        <div>
+          {!this.props.logged && <Redirect to="/" />}
+          {this.state.redirect && <Redirect to={`/series/${this.props.match.params.id}`}/>}
+          <form className={classes.container} noValidate autoComplete="off">
+            <Grid container direction="row" justify="center">
+              <Typography variant="h3" className={classes.middleElem}>Create a new Sketch</Typography></Grid>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              className={classes.middleElem}
+            >
+              <TextField
+                id="title"
+                label="Title"
+                className={classes.textField}
+                onChange={this.handleChange('title')}
+                onBlur={this.validate}
+                margin="normal"
+              />
+              <TextField
+                id="score"
+                label="Score"
+                type='number'
+                className={classes.textField}
+                onChange={this.handleChange('score')}
+                onBlur={this.validate}
+                margin="normal"
+              />
+              <TextField
+                id="createdat"
+                label="Created At"
+                className={classes.textField}
+                type="date"
+                onChange={this.handleChange('createdat')}
+                placeholder="Select creation date"
+                margin="normal"
+                InputLabelProps={{
+                    shrink: true,
+                  }}
+              />
+            </Grid>
+  
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              className={classes.middleElem}
+            >
+             
+              { valid && 
+                <Button variant='contained' color='primary' onClick={this.handleSubmit} className={classes.grow}>
+                  Create sketch
+                  </Button>}
+              {!valid && 
+                <Button variant='outlined' color='secondary' className={classes.grow} disabled={!valid}>
+                  Fill the Sketch first
+                </Button>}
+            </Grid>
+          </form>
+        </div>
+      )
     }
-}
+  }
 
 export default withStyles(styles)(SketchNew);

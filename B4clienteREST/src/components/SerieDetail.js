@@ -52,7 +52,6 @@ export default class SerieDetail extends Component {
         this.props.updateSerie(serie)
     }
 
-
     render() {
         return (
             <div>
@@ -62,12 +61,14 @@ export default class SerieDetail extends Component {
             </p>}
                 {!this.state.loading &&
                     <div>
+                        <Route path="/series/:id/sketches/new" render={(props) => <SketchNew currentUser={this.props.currentUser} reload={this.reload} logged={this.props.logged} {...props}/>}/>
+                        <Route path="/series/:id/sketches/:sketchId" render={(props) => <div>hola</div>}/>
                         <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} updateSerie={this.updateSerie} currentUser={this.props.currentUser} {...props} />} />
                         <Route exact path="/series/:id" render={(props) => {
                             return (<Grid>
                                 <Typography variant="h2">{this.state.serie.title}</Typography>
                                 {(isAllowed(this.props.currentUser, this.state.serie.author.email)) && <Button component={Link} to={'/series/' + this.state.serie.id + '/edit'} color='primary' variant='contained'>Edit</Button>}
-                                {(isAllowed(this.props.currentUser, this.state.serie.author.email)) && <Button component={Link} to={'/sketches/new'} color='primary' variant='outlined' >Create Sketch</Button>}
+                                {(isAllowed(this.props.currentUser, this.state.serie.author.email)) && <Button component={Link} to={`/series/${this.state.serie.id}/sketches/new`} color='primary' variant='outlined' >Create Sketch</Button>}
                             </Grid>)
                         }} />
                         <SketchesList serie={this.state.serie} isOwner={(isAllowed(this.props.currentUser, this.state.serie.author.email))} />

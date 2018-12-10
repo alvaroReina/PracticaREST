@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Axios from 'axios'
 import { SERIES, SKETCHES } from '../services/cte'
 import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core'
+import { Link } from 'react-router-dom'
 
 export default class SketchesList extends Component {
 
@@ -20,7 +21,6 @@ export default class SketchesList extends Component {
             let response = await Axios.get(`${SERIES}/${this.props.serie.id}/sketches`)
 
             response = response.data;
-
             if (response.ok) {
                 sketches = response.list.elements;
             } else {
@@ -76,6 +76,10 @@ export default class SketchesList extends Component {
                                             <TableCell numeric>{s.score}</TableCell>
                                             <TableCell>{(new Date(s.createdat)).toLocaleDateString("en-GB")}</TableCell>
                                             {this.props.isOwner && <TableCell>
+
+                                            </TableCell>}
+                                            {this.props.isOwner && <TableCell>                                                
+                                                <Button variant='contained' color='primary' component={Link} to={`/series/${this.props.serie.id}/edit/${s.id}`}>EDIT</Button>
                                                 <Button variant='contained' color='secondary' onClick={() => { this.deleteSketch(s.id) }}>DELETE</Button>
                                             </TableCell>}
                                         </TableRow>
@@ -85,6 +89,7 @@ export default class SketchesList extends Component {
                         </Table>
                     </Paper>
                 </div>}
+                
             </div>
         )
     }
