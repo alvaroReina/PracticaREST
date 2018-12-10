@@ -139,6 +139,11 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         if (from == null || to == null) {
             return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }
+        
+        if (from < 1 || to < 1 || from > to) {            
+            return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
+        }
+        
         super.findRange(new int[]{from, to});
         resp.isSuccessful(true)
                 .withStatus(Response.Status.OK);

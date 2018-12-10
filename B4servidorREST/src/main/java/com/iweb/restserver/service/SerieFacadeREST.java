@@ -176,6 +176,10 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         if (from == null || to == null || title.equals("")) {            
             return newError(BAD_REQUEST, "Null filter", null, "Please, insert filter first").build();
         }
+        
+        if (from < 1 || to < 1 || from > to) {            
+            return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
+        }
 
         Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title LIKE :title");
 
