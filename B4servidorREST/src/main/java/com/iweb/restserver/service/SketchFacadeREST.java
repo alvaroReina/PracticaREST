@@ -7,6 +7,8 @@ package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Sketch;
 import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.ResponseFactory;
+import static com.iweb.restserver.response.ResponseFactory.newError;
 import com.iweb.restserver.response.RestResponse;
 import java.sql.Date;
 import javax.ejb.Stateless;
@@ -24,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  *
@@ -47,15 +50,8 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         
         RestResponse resp = new RestResponse(true);
         
-        if (entity.getIdserie() == null && "".equals(entity.getTitle())){
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("IDSERIE or title not present");
-            err.withHint("Please, insert IDSERIE or title first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (entity.getIdserie() == null && "".equals(entity.getTitle())){            
+            return newError(BAD_REQUEST, "IDSERIE or title not present", null, "Please, insert IDSERIE or title first").build();
         }
         
         entity.setCreatedat(new Date(System.currentTimeMillis()));
@@ -77,14 +73,7 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         RestResponse resp = new RestResponse(true);
         
         if (id == null){
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
         super.edit(entity);
         resp.isSuccessful(true)
@@ -100,19 +89,11 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         RestResponse resp = new RestResponse(true); 
          
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
             super.remove(super.find(id));
             resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK);
-        
+                    .withStatus(Response.Status.OK);        
                
         return resp.build();
     }
@@ -125,14 +106,7 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         RestResponse resp = new RestResponse(true); 
          
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
             super.find(id);
             resp.isSuccessful(true)
@@ -155,15 +129,8 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         
         RestResponse resp = new RestResponse(true); 
          
-        if (from == null || to == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Range not present");
-            err.withHint("Please, insert range first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (from == null || to == null) {            
+            return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }
             super.findRange(new int[]{from, to});
             resp.isSuccessful(true)
@@ -187,32 +154,23 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response topScore() {
-        
-        RestResponse resp = new RestResponse(true);
-        
+                
             Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.score DESC");
-            q.setMaxResults(5);
-            resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK)
-                    .withAttribute("list", q.getResultList());   
-                   
-        return resp.build();
+            q.setMaxResults(5);  
+            
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @GET
     @Path("latest")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response latest() {
-        
-        RestResponse resp = new RestResponse(true);
+    public Response latest() {        
         
         Query q =em.createQuery("SELECT s FROM Sketch s ORDER By s.createdat DESC");
         q.setMaxResults(5);
-        resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK)
-                    .withAttribute("list", q.getResultList());   
+        
+        return ResponseFactory.newList(q.getResultList()).build();  
                    
-        return resp.build();
     }
 
     @GET
@@ -221,27 +179,16 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
         
-        RestResponse resp = new RestResponse(true);
         
-        if (from == null || to == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Range not present");
-            err.withHint("Please, insert range first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (from == null || to == null) {            
+            return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }
         
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
         q.setParameter("from", from);
         q.setParameter("to", to);
-        resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK)
-                    .withAttribute("list", q.getResultList());   
-                   
-        return resp.build();    
+        
+        return ResponseFactory.newList(q.getResultList()).build(); 
     }
     
     @Override
