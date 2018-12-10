@@ -4,7 +4,7 @@ import NavBar from './components/Navbar';
 import SerieDetail from './components/SerieDetail'
 import Axios from 'axios';
 import { SIGNIN, SERIES } from './services/cte'
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SerieNew from './components/SerieNew';
 
 
@@ -44,7 +44,6 @@ class App extends Component {
     if (response.data.ok)
       series = response.data.list.elements;
 
-    console.log(response);
     this.setState({series: series})
   }
 

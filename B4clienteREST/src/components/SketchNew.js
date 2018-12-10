@@ -2,10 +2,9 @@ import React, { Component } from 'react'
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import {Button, Grid, Typography} from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import Axios from 'axios'
-import { SERIES, SKETCHES } from '../services/cte'
+import { SKETCHES } from '../services/cte'
 
 const styles = theme => ({
     container: {
@@ -60,7 +59,7 @@ const styles = theme => ({
     }
   
     validate = () => {
-      let {title, date, score} = this.state;
+      let {title} = this.state;
   
       let okTitle = title && title.trim().length > 0;
   
@@ -74,7 +73,6 @@ const styles = theme => ({
     }
   
     handleSubmit = async () => {
-      let {currentUser} = this.props;
       let { title, createdat, score } = this.state;
       if (!this.validate()) {
         this.notify('verify all the data before submit')
@@ -100,7 +98,7 @@ const styles = theme => ({
     }
   
     render() {
-      const { classes, currentUser } = this.props;
+      const { classes } = this.props;
       let valid = this.validate();
       return (
         <div>

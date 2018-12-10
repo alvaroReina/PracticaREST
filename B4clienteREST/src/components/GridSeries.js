@@ -15,7 +15,6 @@ const WithWidth = toRenderProps(withWidth());
 
 function GridSeries(props) {
     const { classes, series, currentUser } = props;
-    console.log(series)
     
     return (
         <WithWidth> 
