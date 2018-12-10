@@ -55,9 +55,9 @@ class SerieEdit extends Component {
         let serie = this.props.serie
         serie.title = this.state.title
         serie.picture = this.state.picture
-        this.props.updateSerie(serie)
         Axios.put(`${SERIES}/${serie.id}`, serie, {headers: {'Authorization': localStorage.getItem("session-token")}}).then((response) => {
             this.setState({redirect: true})
+            this.props.loadSeries();
         })
         
 

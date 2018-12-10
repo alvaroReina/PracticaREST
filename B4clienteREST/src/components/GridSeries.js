@@ -15,7 +15,7 @@ const WithWidth = toRenderProps(withWidth());
 
 
 function GridSeries(props) {
-    const { classes, series, currentUser } = props;
+    const { classes, series, currentUser, title } = props;
     
     return (
         <WithWidth> 
@@ -39,7 +39,7 @@ function GridSeries(props) {
             <div className={classes.root} id="grid-series">
             <GridList cellHeight={350} className={classes.gridList} cols={ncols}>
                 <GridListTile key='Subheader' cols={ncols} style={{ height: classes.subHeader.height }}>
-                    <ListSubheader component='div' className={classes.subHeader}>Series</ListSubheader>
+                    <ListSubheader component='div' className={classes.subHeader}>{title}</ListSubheader>
                 </GridListTile>
                 {series.map(serie => (
                     <GridListTile key={serie.id}>
@@ -48,7 +48,7 @@ function GridSeries(props) {
                             title={serie.title}
                             subtitle={<span>by: {serie.author.fullname}. Score: {serie.score}. Views: {serie.views}</span>}
                             actionIcon={
-                                <SeriePopover serie={serie} isOwner={isAllowed(currentUser, serie.author.email)}/>
+                                <SeriePopover serie={serie} loadSeries={props.loadSeries} isOwner={isAllowed(currentUser, serie.author.email)}/>
                             }>
                         </GridListTileBar>
                     </GridListTile>

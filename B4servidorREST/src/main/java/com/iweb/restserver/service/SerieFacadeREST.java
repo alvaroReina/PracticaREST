@@ -81,7 +81,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
 
-        if (id == null) {            
+        if (id == null) {
             return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
         super.edit(entity);
@@ -93,8 +93,20 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
 
     @DELETE
     @Path("{id}")
-    public Response remove(@PathParam("id") Integer id) {
+    @RequireAuthentication
+    public Response remove(@PathParam("id") Integer id, @Context SecurityContext sc) {
         RestResponse resp = new RestResponse(true);
+
+        Serie s;
+        try {
+            s = em.find(Serie.class, id);
+        } catch(Exception e) {
+            return newError(Response.Status.NOT_FOUND, "no such serie").build();
+        }
+        
+        if (!sc.isUserInRole("ADMIN") && !sc.getUserPrincipal().getName().equals(s.getAuthor().getEmail())) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
 
         if (id == null) {
             return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
@@ -169,18 +181,18 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @RequireAuthentication
     public Response searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to, @Context SecurityContext sc) {
-        
+
         boolean esUser = sc.isUserInRole("USER");
         boolean esAdmin = sc.isUserInRole("ADMIN");
         if (!esUser && !esAdmin) {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
-        
-        if (from == null || to == null || title.equals("")) {            
+
+        if (from == null || to == null || title.equals("")) {
             return newError(BAD_REQUEST, "Null filter", null, "Please, insert filter first").build();
         }
-        
-        if (from < 0 || to < 0 || from > to) {            
+
+        if (from < 0 || to < 0 || from > to) {
             return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
         }
 
@@ -191,10 +203,12 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         }
 
         int limit = to - from + 1;
-        if (limit > 100) limit = 100;
-        
+        if (limit > 100) {
+            limit = 100;
+        }
+
         q.setMaxResults(limit);
-        
+
         q.setParameter("title", "%" + title + "%");
         return ResponseFactory.newList(q.getResultList()).build();
     }
@@ -204,8 +218,8 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSerieSketches(@PathParam("id") Integer serieID) {
 
-        if (serieID == 0 || serieID == null) {            
-            return newError(BAD_REQUEST, "Wrong ID", null, "Please, insert id first").build();            
+        if (serieID == 0 || serieID == null) {
+            return newError(BAD_REQUEST, "Wrong ID", null, "Please, insert id first").build();
         }
 
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie.id = :serieID");

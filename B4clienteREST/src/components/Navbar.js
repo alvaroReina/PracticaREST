@@ -6,8 +6,6 @@ import { GOOGLE_CLIENT_ID } from '../services/cte';
 import User from '../models/User'
 import { Link } from 'react-router-dom'
 
-import Search from './Search';
-
 class NavBar extends React.Component {
 
     constructor(props) {
@@ -64,7 +62,7 @@ class NavBar extends React.Component {
                 <AppBar position='fixed'>
                     <Toolbar>
                         {user &&
-                            <IconButton onClick={() => { alert(user.email) }}>
+                            <IconButton component={Link} to={"/"} >
                                 <Avatar alt='user portrait' src={user.imageUrl} />
                             </IconButton>
                         }
@@ -89,6 +87,11 @@ class NavBar extends React.Component {
                             component={Link} to="/series/new"
                             variant='contained' color='secondary'
                         >Create Serie</Button>}
+                         {logged && <Button
+                            className={classes.toolButton}
+                            component={Link} to="/external"
+                            variant='outlined' color='secondary'
+                        >External Resources</Button>}
                         <div className={classes.grow} />
                         {
                             !logged &&

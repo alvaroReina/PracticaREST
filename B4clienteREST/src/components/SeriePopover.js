@@ -5,6 +5,8 @@ import Popover from '@material-ui/core/Popover';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import {Button} from '@material-ui/core';
 import {Link} from 'react-router-dom';
+import Axios from 'axios';
+import {SERIES} from '../services/cte';
 
 const styles = theme => ({
     icon: {
@@ -23,9 +25,8 @@ class SeriePopover extends React.Component {
         }
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
-        this.edit = this.edit.bind(this);
         this.remove = this.remove.bind(this);
-        this.view = this.view.bind(this);
+        
     }
 
     open(event) {
@@ -40,21 +41,20 @@ class SeriePopover extends React.Component {
         });
     }
 
-    edit() {
+    async remove() {
         let {serie} = this.props;
-        alert(`Editando ${serie.name}`)
-        this.close()
-    }
 
-    remove() {
-        let {serie} = this.props;
-        alert(`Eliminando ${serie.name}`)
-        this.close()
-    }
-
-    view() {
-        let {serie} = this.props;
-        alert(`Navegando a ${serie.name}`)
+        try {
+            let response = await Axios.delete(`${SERIES}/${serie.id}`, {headers: {'Authorization': localStorage.getItem("session-token")}});
+            response = response.data;
+            if(response.ok) {
+                this.props.loadSeries();
+            } else {
+                alert('We could not remove that serie');
+            }
+        } catch(err){
+            alert('We coudld not remove that serie');
+        }
         this.close()
     }
 

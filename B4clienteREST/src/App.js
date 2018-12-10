@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SerieNew from './components/SerieNew';
 import SearchSerie from './components/SearchSerie'
 import SearchSketch from './components/SearchSketch'
+import ComicExternal from './components/External';
 
 
 const placeholderUser = {
@@ -24,7 +25,8 @@ class App extends Component {
       user: placeholderUser,
       logged: false,
       sessionToken: undefined,
-      series: []
+      series: [],
+      topSeries: []
     }
     this.login = this.login.bind(this)
     this.logout = this.logout.bind(this)   
@@ -43,13 +45,26 @@ class App extends Component {
     this.loadSeries()
   }
 
+  loadTopSeries = async () => {
+    let response = await Axios.get(`${SERIES}/top`);
+    let top = [];
+    if(response.data.ok) {
+      top = response.data.list.elements;
+    }
+    this.setState({topSeries: top});
+  }
+
   loadSeries = async () => {
     let response = await Axios.get(SERIES)
     let series = [];
+    try {
     if (response.data.ok)
       series = response.data.list.elements;
-
     this.setState({series: series})
+    } catch(err) {
+      console.log(err);
+    }
+    this.loadTopSeries();
   }
 
   async login(gtoken, user) {
@@ -107,14 +122,6 @@ class App extends Component {
     this.setState({ logged: false, user: placeholderUser, sessionToken: undefined })
   }
 
-  updateSerie = (serie) => {
-    let series = this.state.series
-    let i = series.findIndex((s) => s.id === serie.id)
-    if(i >= 0) {
-      series[i] = serie
-    }
-    this.setState({series})
-  }
 
   render() {
     return (
@@ -124,9 +131,13 @@ class App extends Component {
             <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} />  
             <Switch>
               <Route path="/series/new" render={() => <SerieNew loadSeries={this.loadSeries} currentUser={this.state.user} logged={this.state.logged}/>}/>
-              <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
+              <Route exact path="/(series|)" render={() => <div>
+                  <GridSeries title={'Top Series'} loadSeries={this.loadSeries} series={this.state.topSeries} currentUser={this.state.user}/>
+                  <GridSeries title={'all Series'} loadSeries={this.loadSeries} series={this.state.series} currentUser={this.state.user}/>
+                  </div>}/>
+              <Route path="/external" render={() => <ComicExternal/>}/>
               <Route path="/series/search" render={(props) => <SearchSerie currentUser={this.state.user} />} />
-              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
+              <Route path="/series/:id" render={(props) => <SerieDetail loadSeries={this.loadSeries} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
               <Route path="/sketches/search" render={(props) => <SearchSketch currentUser={this.state.user} />} />
             </Switch>
           </div>

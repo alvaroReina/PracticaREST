@@ -49,7 +49,7 @@ export default class SerieDetail extends Component {
                 {!this.state.loading &&
                     <div>
                         <Route path="/series/:id/edit/:sketchId" render={(props) => <SketchEdit currentUser={this.props.currentUser} logged={this.props.logged} sketch={this.state.selectedSketch}/>}/>
-                        <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} updateSerie={this.props.updateSerie} currentUser={this.props.currentUser} {...props} />} />
+                        <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} loadSeries={this.props.loadSeries} currentUser={this.props.currentUser} {...props} />} />
                         <Route exact path="/series/:id" render={(props) => {
                             return (<Grid>
                                 <Typography variant="h2">{this.state.serie.title}</Typography>
