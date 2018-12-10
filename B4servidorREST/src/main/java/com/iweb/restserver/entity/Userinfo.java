@@ -7,7 +7,9 @@ package com.iweb.restserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -37,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Userinfo.findByEmail", query = "SELECT u FROM Userinfo u WHERE u.email = :email")
     , @NamedQuery(name = "Userinfo.findByUserrole", query = "SELECT u FROM Userinfo u WHERE u.userrole = :userrole")
     , @NamedQuery(name = "Userinfo.findByPicture", query = "SELECT u FROM Userinfo u WHERE u.picture = :picture")})
-public class Userinfo implements Serializable {
+public class Userinfo implements Serializable, Principal{
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -152,6 +154,11 @@ public class Userinfo implements Serializable {
     @Override
     public String toString() {
         return "com.iweb.restserver.entity.Userinfo[ id=" + id + " ]";
+    }
+
+    @Override
+    public String getName() {
+        return this.fullname;
     }
     
 }

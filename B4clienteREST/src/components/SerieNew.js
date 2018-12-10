@@ -91,7 +91,7 @@ class SerieNew extends Component {
     }
 
     try {
-      let resp = await Axios.post(SERIES, {title,picture, score, author: {id: currentUser.id}});
+      let resp = await Axios.post(SERIES, {title,picture, score, author: {id: currentUser.id}}, {headers: {'Authorization': localStorage.getItem("session-token")}});
       console.log(resp);
       resp = resp.data;
       if (resp.ok) {

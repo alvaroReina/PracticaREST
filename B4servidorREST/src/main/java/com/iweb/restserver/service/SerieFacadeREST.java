@@ -9,6 +9,8 @@ import com.iweb.restserver.entity.Serie;
 import com.iweb.restserver.response.ErrorAttribute;
 import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
+import com.iweb.restserver.security.AuthContext;
+import com.iweb.restserver.security.RequireAuthentication;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,8 +24,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
@@ -43,11 +47,11 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_JSON})
+    @RequireAuthentication
     public Response create(Serie entity) {
         RestResponse resp = new RestResponse(true);
 
         entity.setId(0);
-
         if ("".equals(entity.getTitle())) {
             return ResponseFactory.newError(Response.Status.BAD_REQUEST, "Title required").build();
         } else if (entity.getPicture() == null || "".equals(entity.getPicture())) {
@@ -58,7 +62,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         if (entity.getScore() == null) {
             entity.setScore(5);
         }
-        
+
         super.create(entity);
         return resp.build();
 
@@ -67,8 +71,13 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response edit(@PathParam("id") Integer id, Serie entity) {
+    @RequireAuthentication
+    public Response edit(@PathParam("id") Integer id, Serie entity, @Context SecurityContext sc) {
         RestResponse resp = new RestResponse(true);
+
+        if (!sc.isUserInRole("ADMIN") && !sc.getUserPrincipal().getName().equals(entity.getAuthor().getEmail())) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
 
         if (id == null) {
             ErrorAttribute err = new ErrorAttribute();

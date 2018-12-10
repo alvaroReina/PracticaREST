@@ -12,13 +12,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.exceptions.ValidationException;
 import com.iweb.restserver.response.ErrorAttribute;
-import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
-import com.iweb.restserver.response.SingleEntryAttribute;
 import com.iweb.restserver.security.RequireAuthentication;
 import com.iweb.restserver.security.SignaturePolicy;
 import io.fusionauth.jwt.domain.JWT;
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -129,8 +126,9 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
             JWT jwt = new JWT();
             jwt.setIssuer("iweb-auth");
             jwt.setSubject(user.getEmail());
-            jwt.otherClaims.put("user", user);
-            jwt.setAudience("iweb");
+            jwt.setUniqueId(user.getId().toString());
+            jwt.setAudience(user.getUserrole());
+            jwt.setAudience(new String[]{user.getFullname(), user.getUserrole(), user.getPicture()});
             jwt.setIssuedAt(ZonedDateTime.now());
             jwt.setExpiration(ZonedDateTime.now().plusWeeks(1));
 
