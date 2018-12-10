@@ -169,15 +169,8 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         
         RestResponse resp = new RestResponse(true); 
          
-        if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (id == null) {            
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
             super.find(id);
             resp.isSuccessful(true)
@@ -233,15 +226,8 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         
         RestResponse resp = new RestResponse(true);
         
-        if (id == null){
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (id == null){            
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
         super.edit(entity);
         resp.isSuccessful(true)
@@ -257,14 +243,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         RestResponse resp = new RestResponse(true); 
          
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
             super.remove(super.find(id));
             resp.isSuccessful(true)
@@ -281,14 +260,7 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
          RestResponse resp = new RestResponse(true); 
          
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
             super.find(id);
             resp.isSuccessful(true)
@@ -311,15 +283,8 @@ public class UserinfoFacadeREST extends AbstractFacade<Userinfo> {
         
         RestResponse resp = new RestResponse(true); 
          
-        if (from == null || to == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Range not present");
-            err.withHint("Please, insert range first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (from == null || to == null) {            
+            return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }
             super.findRange(new int[]{from, to});
             resp.isSuccessful(true)

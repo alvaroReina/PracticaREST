@@ -8,6 +8,7 @@ package com.iweb.restserver.service;
 import com.iweb.restserver.entity.Serie;
 import com.iweb.restserver.response.ErrorAttribute;
 import com.iweb.restserver.response.ResponseFactory;
+import static com.iweb.restserver.response.ResponseFactory.newError;
 import com.iweb.restserver.response.RestResponse;
 import com.iweb.restserver.security.AuthContext;
 import com.iweb.restserver.security.RequireAuthentication;
@@ -27,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -79,15 +81,8 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
 
-        if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (id == null) {            
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
         super.edit(entity);
         resp.isSuccessful(true)
@@ -102,14 +97,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         RestResponse resp = new RestResponse(true);
 
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
         super.remove(super.find(id));
         resp.isSuccessful(true)
@@ -125,14 +113,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
         RestResponse resp = new RestResponse(true);
 
         if (id == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("ID not present");
-            err.withHint("Please, insert ID first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
 
         Serie s = super.find(id);
@@ -165,30 +146,20 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response topScore() {
-        RestResponse resp = new RestResponse(true);
 
         Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
         q.setMaxResults(5);
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK)
-                .withAttribute("list", q.getResultList());
-
-        return resp.build();
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @GET
     @Path("mostviewed")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response mostViewed() {
-        RestResponse resp = new RestResponse(true);
 
         Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.views DESC");
         q.setMaxResults(5);
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK)
-                .withAttribute("list", q.getResultList());
-
-        return resp.build();
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @GET
@@ -196,19 +167,18 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response searchWithFilter(@QueryParam("title") String title,
-            @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-
-        RestResponse resp = new RestResponse(true);
-
-        if (from == null || to == null || title.equals("")) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Null filter");
-            err.withHint("Please, insert filter first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+            @QueryParam("from") Integer from, @QueryParam("to") Integer to, @Context SecurityContext sc) {
+        
+        if (!sc.isUserInRole("USER") || !sc.isUserInRole("ADMIN")) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
+        
+        if (from == null || to == null || title.equals("")) {            
+            return newError(BAD_REQUEST, "Null filter", null, "Please, insert filter first").build();
+        }
+        
+        if (from < 1 || to < 1 || from > to) {            
+            return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
         }
 
         Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title LIKE :title");
@@ -232,17 +202,8 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSerieSketches(@PathParam("id") Integer serieID) {
 
-        RestResponse resp = new RestResponse(true);
-
-        if (serieID == 0 || serieID == null) {
-            ErrorAttribute err = new ErrorAttribute();
-            err.withCause("Wrong ID");
-            err.withHint("Please, insert id first");
-            return resp
-                    .isSuccessful(false)
-                    .withComposedAttribute(err)
-                    .withStatus(Response.Status.BAD_REQUEST)
-                    .build();
+        if (serieID == 0 || serieID == null) {            
+            return newError(BAD_REQUEST, "Wrong ID", null, "Please, insert id first").build();            
         }
 
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie.id = :serieID");
