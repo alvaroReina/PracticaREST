@@ -95,6 +95,7 @@ class SerieNew extends Component {
       console.log(resp);
       resp = resp.data;
       if (resp.ok) {
+        this.props.loadSeries()
         this.setState({redirect: true})
       } else {
         this.notify(`Oops: ${JSON.stringify(resp.error)}`)
@@ -114,6 +115,7 @@ class SerieNew extends Component {
     let valid = this.validate();
     return (
       <div>
+        {this.state.redirect && <Redirect to="/" />}
         {!this.props.logged && <Redirect to="/" />}
         <form className={classes.container} noValidate autoComplete="off">
           <Grid container direction="row" justify="center">

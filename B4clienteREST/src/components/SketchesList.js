@@ -4,6 +4,8 @@ import { SERIES, SKETCHES } from '../services/cte'
 import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core'
 import Popup from "reactjs-popup";
 import SketchEdit from './SketchEdit'
+import SketchNew from './SketchNew'
+import { Route } from 'react-router-dom'
 
 export default class SketchesList extends Component {
 
@@ -15,8 +17,11 @@ export default class SketchesList extends Component {
         }
     }
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.loadSketches()
+    }
 
+    loadSketches = async () => {
         let sketches = [];
         try {
             let response = await Axios.get(`${SERIES}/${this.props.serie.id}/sketches`)
@@ -39,7 +44,6 @@ export default class SketchesList extends Component {
             resp = resp.data;
             if (resp.ok) {
                 this.setState({ sketches: this.state.sketches.filter(s => s.id !== id) });
-                alert('sketch deleted!');
             } else {
                 alert('something went wrong');
             }
@@ -60,6 +64,7 @@ export default class SketchesList extends Component {
     render() {
         return (
             <div>
+                <Route path="/series/:id/sketches/new" render={(props) => <SketchNew loadSketches={this.loadSketches} logged={this.props.isOwner} {...props}/>}/>
                 {!this.state.loading && <div>
                     <Typography align="center" variant="h4">
                         Sketches

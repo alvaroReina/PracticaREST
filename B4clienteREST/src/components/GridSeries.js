@@ -6,6 +6,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import SeriePopover from './SeriePopover'
+import { isAllowed } from '../utils/validator'
 
 //To solve the cols for width
 import toRenderProps from 'recompose/toRenderProps';
@@ -47,7 +48,7 @@ function GridSeries(props) {
                             title={serie.title}
                             subtitle={<span>by: {serie.author.fullname}. Score: {serie.score}. Views: {serie.views}</span>}
                             actionIcon={
-                                <SeriePopover serie={serie} isOwner={currentUser.email ===serie.author.email}/>
+                                <SeriePopover serie={serie} isOwner={isAllowed(currentUser, serie.author.email)}/>
                             }>
                         </GridListTileBar>
                     </GridListTile>

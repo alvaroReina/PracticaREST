@@ -52,10 +52,6 @@ const styles = theme => ({
     }
   
     componentDidMount() {
-  
-      if (!this.props.currentUser) {
-        alert('no author!');
-      }
     }
   
     validate = () => {
@@ -91,6 +87,7 @@ const styles = theme => ({
         console.log(err);
         this.notify("Something went wrong")
       }
+      this.props.loadSketches()
     }
   
     notify = (msg) => {
