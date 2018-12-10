@@ -6,8 +6,11 @@
 package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Serie;
-import com.iweb.restserver.entity.Sketch;
-import java.util.List;
+import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.ResponseFactory;
+import com.iweb.restserver.response.RestResponse;
+import com.iweb.restserver.security.AuthContext;
+import com.iweb.restserver.security.RequireAuthentication;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +24,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
@@ -41,95 +47,207 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_JSON})
-    public void create(Serie entity) {
-        
-        if (entity.getPicture() == null || "".equals(entity.getPicture()))
-            entity.setPicture("DEFAULTO");
-        
-        
-        
+    @RequireAuthentication
+    public Response create(Serie entity) {
+        RestResponse resp = new RestResponse(true);
+
+        entity.setId(0);
+        if ("".equals(entity.getTitle())) {
+            return ResponseFactory.newError(Response.Status.BAD_REQUEST, "Title required").build();
+        } else if (entity.getPicture() == null || "".equals(entity.getPicture())) {
+            entity.setPicture("assets/img/default.jpg");
+        }
+
+        entity.setViews(0);
+        if (entity.getScore() == null) {
+            entity.setScore(5);
+        }
+
         super.create(entity);
+        return resp.build();
+
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Integer id, Serie entity) {
+    @RequireAuthentication
+    public Response edit(@PathParam("id") Integer id, Serie entity, @Context SecurityContext sc) {
+        RestResponse resp = new RestResponse(true);
+
+        if (!sc.isUserInRole("ADMIN") && !sc.getUserPrincipal().getName().equals(entity.getAuthor().getEmail())) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
+
+        if (id == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
         super.edit(entity);
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK);
+
+        return resp.build();
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
+    public Response remove(@PathParam("id") Integer id) {
+        RestResponse resp = new RestResponse(true);
+
+        if (id == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
         super.remove(super.find(id));
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK);
+
+        return resp.build();
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Serie find(@PathParam("id") Integer id) {
+    public Response find(@PathParam("id") Integer id) {
+        RestResponse resp = new RestResponse(true);
+
+        if (id == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("ID not present");
+            err.withHint("Please, insert ID first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+
         Serie s = super.find(id);
-        Integer v = s.getViews() + 1;
-        s.setViews(v);
-        return s;
+        s.setViews(s.getViews() + 1);
+        getEntityManager().merge(s);
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK);
+        return ResponseFactory.newSingleEntity(s, "serie").build();
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_JSON})
-    public List<Serie> findAll() {
+    public Response findAll() {
         return super.findAll();
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String countREST() {
-        return String.valueOf(super.count());
+    public Response countREST() {
+        RestResponse resp = new RestResponse(true);
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK)
+                .withAttribute("value", String.valueOf(super.count()));
+        return resp.build();
     }
 
     @GET
     @Path("top")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Serie> topScore() {
+    public Response topScore() {
+        RestResponse resp = new RestResponse(true);
+
         Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.score DESC");
         q.setMaxResults(5);
-        return q.getResultList();
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK)
+                .withAttribute("list", q.getResultList());
+
+        return resp.build();
     }
 
     @GET
     @Path("mostviewed")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Serie> mostViewed() {
+    public Response mostViewed() {
+        RestResponse resp = new RestResponse(true);
+
         Query q = em.createQuery("SELECT s FROM Serie s ORDER By s.views DESC");
         q.setMaxResults(5);
-        return q.getResultList();
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK)
+                .withAttribute("list", q.getResultList());
+
+        return resp.build();
     }
 
     @GET
     @Path("search")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Serie> searchWithFilter(@QueryParam("title") String title,
+    public Response searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-        if (from == null || to == null) {
-            throw new RuntimeException("Null filter");
+
+        RestResponse resp = new RestResponse(true);
+
+        if (from == null || to == null || title.equals("")) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Null filter");
+            err.withHint("Please, insert filter first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
         }
 
-        Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title BETWEEN :from AND :to LIKE :%title%");
-        q.setParameter("from", from);
-        q.setParameter("to", to);
-        q.setParameter("tittle", "%" + title + "%");
-        return q.getResultList();
+        Query q = em.createQuery("SELECT s FROM Serie s WHERE s.title LIKE :title");
+
+        if (from >= 0) {
+            q.setFirstResult(from);
+        }
+
+        if (from > 0 && to > 0) {
+            q.setMaxResults(Math.abs(from - to));
+        } else {
+            q.setMaxResults(25);
+        }
+
+        q.setParameter("title", "%" + title + "%");
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @GET
     @Path("{id}/sketches")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Sketch> getSerieSketches(@PathParam("id") Integer serieID) {
-        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie =: serieID");
+    public Response getSerieSketches(@PathParam("id") Integer serieID) {
+
+        RestResponse resp = new RestResponse(true);
+
+        if (serieID == 0 || serieID == null) {
+            ErrorAttribute err = new ErrorAttribute();
+            err.withCause("Wrong ID");
+            err.withHint("Please, insert id first");
+            return resp
+                    .isSuccessful(false)
+                    .withComposedAttribute(err)
+                    .withStatus(Response.Status.BAD_REQUEST)
+                    .build();
+        }
+
+        Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.idserie.id = :serieID");
         q.setParameter("serieID", serieID);
-        return q.getResultList();
+        return ResponseFactory.newList(q.getResultList()).build();
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import static javax.persistence.FetchType.EAGER;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -52,7 +53,7 @@ public class Sketch implements Serializable {
     private Date createdat;
     private Integer score;
     @JoinColumn(name = "IDSERIE", referencedColumnName = "ID")
-    @ManyToOne(optional = false, fetch = EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Serie idserie;
 
     public Sketch() {

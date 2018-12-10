@@ -6,11 +6,15 @@
 package com.iweb.restserver.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Userinfo.findByEmail", query = "SELECT u FROM Userinfo u WHERE u.email = :email")
     , @NamedQuery(name = "Userinfo.findByUserrole", query = "SELECT u FROM Userinfo u WHERE u.userrole = :userrole")
     , @NamedQuery(name = "Userinfo.findByPicture", query = "SELECT u FROM Userinfo u WHERE u.picture = :picture")})
-public class Userinfo implements Serializable {
+public class Userinfo implements Serializable, Principal{
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,8 +63,7 @@ public class Userinfo implements Serializable {
     @NotNull
     @Size(min = 1, max = 256)
     private String picture;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
-    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author", fetch = FetchType.LAZY)
     private List<Serie> serieList;
 
     public Userinfo() {
@@ -119,6 +122,7 @@ public class Userinfo implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Serie> getSerieList() {
         return serieList;
     }
@@ -150,6 +154,11 @@ public class Userinfo implements Serializable {
     @Override
     public String toString() {
         return "com.iweb.restserver.entity.Userinfo[ id=" + id + " ]";
+    }
+
+    @Override
+    public String getName() {
+        return this.fullname;
     }
     
 }

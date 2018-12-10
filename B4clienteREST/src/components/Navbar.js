@@ -1,10 +1,11 @@
 import React from 'react';
-import { Menu, MenuItem, Avatar, AppBar, Toolbar, IconButton, InputBase, Typography } from '@material-ui/core';
+import { Menu, MenuItem, Avatar, AppBar, Toolbar, IconButton, Button, Typography } from '@material-ui/core';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import SearchIcon from '@material-ui/icons/Search';
 import { withStyles } from '@material-ui/core/styles';
 import { GOOGLE_CLIENT_ID } from '../services/cte';
 import User from '../models/User'
+import { Link } from 'react-router-dom'
 
 import Search from './Search';
 
@@ -68,10 +69,15 @@ class NavBar extends React.Component {
                                 <Avatar alt='user portrait' src={user.imageUrl} />
                             </IconButton>
                         }
-                        <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+                        <Typography className={classes.title} component={Link} style={{ textDecoration: 'none' }} to="/" variant="h6" color="inherit" noWrap>
                             Comic manager
                         </Typography>
                         <Search />
+                        {logged && <Button
+                            className={classes.toolButton}
+                            component={Link} to="/series/new"
+                            variant='contained' color='secondary'
+                        >Create Serie</Button>}
                         <div className={classes.grow} />
                         {
                             !logged &&
@@ -112,6 +118,9 @@ const styles = theme => ({
         [theme.breakpoints.up('sm')]: {
             display: 'block',
         },
+    },
+    toolButton: {
+        marginLeft: theme.spacing.unit * 3
     },
 
     sectionDesktop: {
