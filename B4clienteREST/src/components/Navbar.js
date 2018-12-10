@@ -1,7 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem, Avatar, AppBar, Toolbar, IconButton, Button, Typography } from '@material-ui/core';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import SearchIcon from '@material-ui/icons/Search';
 import { withStyles } from '@material-ui/core/styles';
 import { GOOGLE_CLIENT_ID } from '../services/cte';
 import User from '../models/User'

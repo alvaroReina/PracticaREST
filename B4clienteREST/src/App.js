@@ -4,7 +4,7 @@ import NavBar from './components/Navbar';
 import SerieDetail from './components/SerieDetail'
 import Axios from 'axios';
 import { SIGNIN, SERIES } from './services/cte'
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SerieNew from './components/SerieNew';
 
 
@@ -44,7 +44,6 @@ class App extends Component {
     if (response.data.ok)
       series = response.data.list.elements;
 
-    console.log(response);
     this.setState({series: series})
   }
 
@@ -121,7 +120,7 @@ class App extends Component {
             <Switch>
               <Route path="/series/new" render={() => <SerieNew currentUser={this.state.user} logged={this.state.logged}/>}/>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
-              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} {...props}/>}/>
+              <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
             </Switch>
           </div>
         </Router>

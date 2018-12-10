@@ -71,7 +71,7 @@ class SerieEdit extends Component {
             <TextField className={classes.textField} id="title" label="Title" placeholder="Title" value={this.state.title} onChange={this.handleTitle} margin="normal" />
             <TextField className={classes.textField} id="picture" label="Picture" placeholder="Picture Url" value={this.state.picture} onChange={this.handlePicture} margin="normal" />
             <Button color="primary" onClick={this.handleSubmit} variant="contained">Submit</Button>
-            <Button color="secondary" component={Link} to={`/series/${this.props.serie.id}`} variant="contained">Cansel</Button>
+            <Button color="secondary" component={Link} to={`/series/${this.props.serie.id}`} variant="contained">Cancel</Button>
         </form>
         )
     }
