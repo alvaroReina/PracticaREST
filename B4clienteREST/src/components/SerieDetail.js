@@ -4,8 +4,11 @@ import { SERIES } from '../services/cte'
 import { Redirect } from 'react-router'
 import SerieEdit from './SerieEdit'
 import { Route, Link } from 'react-router-dom'
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography, Grid } from '@material-ui/core';
 import SketchesList from './SketchesList'
+import SketchNew from "./SketchNew";
+
+import { isAllowed } from '../utils/validator';
 
 export default class SerieDetail extends Component {
 
@@ -36,7 +39,7 @@ export default class SerieDetail extends Component {
             if (serie) {
                 this.setState({ serie, loading: false })
             } else {
-                
+
             }
         } catch (err) {
             alert('NOT FOUND')
@@ -49,6 +52,7 @@ export default class SerieDetail extends Component {
         this.props.updateSerie(serie)
     }
 
+
     render() {
         return (
             <div>
@@ -60,12 +64,13 @@ export default class SerieDetail extends Component {
                     <div>
                         <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} updateSerie={this.updateSerie} currentUser={this.props.currentUser} {...props} />} />
                         <Route exact path="/series/:id" render={(props) => {
-                            return (<div>
+                            return (<Grid>
                                 <Typography variant="h2">{this.state.serie.title}</Typography>
-                                {this.props.currentUser.email === this.state.serie.author.email && <Button component={Link} to={'/series/' + this.state.serie.id + '/edit'} color='primary' variant='contained'>Edit</Button>}
-                            </div>)
+                                {(isAllowed(this.props.currentUser, this.state.serie.author.email)) && <Button component={Link} to={'/series/' + this.state.serie.id + '/edit'} color='primary' variant='contained'>Edit</Button>}
+                                {(isAllowed(this.props.currentUser, this.state.serie.author.email)) && <Button component={Link} to={'/sketches/new'} color='primary' variant='outlined' >Create Sketch</Button>}
+                            </Grid>)
                         }} />
-                        <SketchesList serie={this.state.serie} />
+                        <SketchesList serie={this.state.serie} isOwner={(isAllowed(this.props.currentUser, this.state.serie.author.email))} />
                     </div>}
             </div>
         )

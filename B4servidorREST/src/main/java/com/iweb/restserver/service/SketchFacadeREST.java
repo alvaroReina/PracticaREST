@@ -7,7 +7,9 @@ package com.iweb.restserver.service;
 
 import com.iweb.restserver.entity.Sketch;
 import com.iweb.restserver.response.ErrorAttribute;
+import com.iweb.restserver.response.ResponseFactory;
 import com.iweb.restserver.response.RestResponse;
+import com.iweb.restserver.security.RequireAuthentication;
 import java.sql.Date;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -95,6 +97,7 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
 
     @DELETE
     @Path("{id}")
+    @RequireAuthentication
     public Response remove(@PathParam("id") Integer id) {
         
         RestResponse resp = new RestResponse(true); 
@@ -109,12 +112,14 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
                     .withStatus(Response.Status.BAD_REQUEST)
                     .build();
         }
-            super.remove(super.find(id));
-            resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK);
         
-               
-        return resp.build();
+        Sketch e = super.find(id);
+        if (e == null) {
+            return ResponseFactory.newError(Response.Status.NOT_FOUND, "Sketch not found").build();
+        }
+        
+        super.remove(e);
+        return ResponseFactory.newSingleEntity(e, "sketch").build();
     }
 
     @GET

@@ -7,3 +7,7 @@ export const notBlank = (str) => {
 export const isNumber = (num) => {
     return (num !== undefined && num !== null && typeof num === "number" && !isNaN(num)) ? num : undefined; 
 }
+
+export const isAllowed = (user, resourceEmail) => {
+    return user.userrole === "ADMIN" || resourceEmail === user.email;
+}

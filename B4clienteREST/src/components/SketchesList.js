@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Axios from 'axios'
-import { SERIES } from '../services/cte'
-import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography } from '@material-ui/core'
+import { SERIES, SKETCHES } from '../services/cte'
+import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core'
 
 export default class SketchesList extends Component {
 
@@ -32,6 +32,22 @@ export default class SketchesList extends Component {
         this.setState({ sketches, loading: false })
     }
 
+    deleteSketch = async (id) => {
+        try {
+            let resp = await Axios.delete(`${SKETCHES}/${id}`, { headers: { 'Authorization': localStorage.getItem("session-token") } });
+            resp = resp.data;
+            if (resp.ok) {
+                this.setState({ sketches: this.state.sketches.filter(s => s.id !== id) });
+                alert('sketch deleted!');
+            } else {
+                alert('something went wrong');
+            }
+        } catch (err) {
+            alert("Error deleting sketch:", id);
+            console.log(err);
+        }
+    }
+
     render() {
         return (
             <div>
@@ -59,6 +75,9 @@ export default class SketchesList extends Component {
                                             <TableCell>{s.title}</TableCell>
                                             <TableCell numeric>{s.score}</TableCell>
                                             <TableCell>{(new Date(s.createdat)).toLocaleDateString("en-GB")}</TableCell>
+                                            {this.props.isOwner && <TableCell>
+                                                <Button variant='contained' color='secondary' onClick={() => { this.deleteSketch(s.id) }}>DELETE</Button>
+                                            </TableCell>}
                                         </TableRow>
                                     );
                                 })}
