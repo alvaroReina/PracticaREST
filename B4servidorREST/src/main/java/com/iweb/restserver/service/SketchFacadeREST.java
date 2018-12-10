@@ -108,11 +108,12 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         if (id == null) {
             return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
-            super.find(id);
-            resp.isSuccessful(true)
-                    .withStatus(Response.Status.OK);        
-               
-        return resp.build();
+        
+        Sketch s = super.find(id);            
+        getEntityManager().merge(s);
+        resp.isSuccessful(true)
+                .withStatus(Response.Status.OK);
+        return ResponseFactory.newSingleEntity(s, "sketch").build();
     }
 
     @GET
