@@ -184,8 +184,12 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("betweendates")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to) {
-
+    public Response findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to, @Context SecurityContext sc) {
+        
+        if (!sc.isUserInRole("USER") || !sc.isUserInRole("ADMIN")) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
+        
         if (from == null || to == null) {
             return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }

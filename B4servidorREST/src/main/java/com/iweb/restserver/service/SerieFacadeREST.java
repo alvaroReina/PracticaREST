@@ -167,8 +167,12 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response searchWithFilter(@QueryParam("title") String title,
-            @QueryParam("from") Integer from, @QueryParam("to") Integer to) {
-
+            @QueryParam("from") Integer from, @QueryParam("to") Integer to, @Context SecurityContext sc) {
+        
+        if (!sc.isUserInRole("USER") || !sc.isUserInRole("ADMIN")) {
+            return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
+        }
+        
         if (from == null || to == null || title.equals("")) {            
             return newError(BAD_REQUEST, "Null filter", null, "Please, insert filter first").build();
         }
