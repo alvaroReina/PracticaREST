@@ -44,8 +44,6 @@ const styles = theme => ({
       super(props)
       this.state = {
         title: "",
-        createdat: new Date(),
-        score: "",
         redirect: false,
       }
   
@@ -65,9 +63,8 @@ const styles = theme => ({
       let {title, date, score} = this.state;
   
       let okTitle = title && title.trim().length > 0;
-      let okScore = score && !isNaN(Number.parseFloat(score));
   
-      return (okTitle && okScore);
+      return (okTitle);
     }
   
     handleChange = name => event => {
@@ -126,27 +123,6 @@ const styles = theme => ({
                 onChange={this.handleChange('title')}
                 onBlur={this.validate}
                 margin="normal"
-              />
-              <TextField
-                id="score"
-                label="Score"
-                type='number'
-                className={classes.textField}
-                onChange={this.handleChange('score')}
-                onBlur={this.validate}
-                margin="normal"
-              />
-              <TextField
-                id="createdat"
-                label="Created At"
-                className={classes.textField}
-                type="date"
-                onChange={this.handleChange('createdat')}
-                placeholder="Select creation date"
-                margin="normal"
-                InputLabelProps={{
-                    shrink: true,
-                  }}
               />
             </Grid>
   

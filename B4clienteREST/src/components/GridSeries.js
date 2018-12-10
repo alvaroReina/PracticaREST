@@ -46,7 +46,7 @@ function GridSeries(props) {
                         <img src={serie.picture} alt={serie.title} />
                         <GridListTileBar
                             title={serie.title}
-                            subtitle={<span>by: {serie.author.fullname}. Score: {serie.score}</span>}
+                            subtitle={<span>by: {serie.author.fullname}. Score: {serie.score}. Views: {serie.views}</span>}
                             actionIcon={
                                 <SeriePopover serie={serie} isOwner={currentUser.email ===serie.author.email}/>
                             }>
