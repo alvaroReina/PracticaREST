@@ -1,11 +1,7 @@
-
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { Button, Grid, Typography } from '@material-ui/core';
-import GridSeries from './GridSeries';
-import { SERIES, SKETCHES } from '../services/cte';
+import { Button, Grid } from '@material-ui/core';
 import Axios from 'axios';
 
 const BASE_REQ = `https://comicvine.gamespot.com/api/series_list/?api_key=2939460b79166aad1121ca55eb7d41803186c9c6&format=json&filter=name:`;

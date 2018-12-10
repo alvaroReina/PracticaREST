@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import {Button, Grid, Typography} from '@material-ui/core';
-import { Redirect } from 'react-router'
 import Axios from 'axios'
 import { SKETCHES } from '../services/cte'
 

@@ -1,14 +1,12 @@
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
-import Axios from 'axios';
-import { SERIES, SKETCHES } from '../services/cte';
 import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 class GridSketch extends Component {
 
     render() {
-        const { classes, sketches, currentUser } = this.props;
+        const {sketches} = this.props;
 
 
         return (

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { Button, Grid, Typography } from '@material-ui/core';
 import GridSeries from './GridSeries';
-import { SERIES, SKETCHES } from '../services/cte';
+import { SERIES } from '../services/cte';
 
 import Axios from 'axios';
 
@@ -57,7 +57,6 @@ class SearchSerie extends React.Component {
 
         try {
             let resp = await Axios.get(`${SERIES}/search?title=${title}&from=${from}&to=${to}`, {headers: {'Authorization': localStorage.getItem("session-token")}});
-            console.log(resp.data);
             resp = resp.data;
             if (resp.ok) {
                 series = resp.list.elements;
@@ -74,7 +73,6 @@ class SearchSerie extends React.Component {
     }
 
     handleChange = name => event => {
-        console.log("handle change", name, event.currentTarget.value);
         let val = event.currentTarget.value;
         this.setState({
             [name]: val
@@ -82,7 +80,6 @@ class SearchSerie extends React.Component {
     }
 
     render() {
-        console.log(JSON.stringify(this.state.serieResults));
         let { classes } = this.props;
         return (
             <div>
