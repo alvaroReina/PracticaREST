@@ -166,10 +166,13 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
     @Path("search")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @RequireAuthentication
     public Response searchWithFilter(@QueryParam("title") String title,
             @QueryParam("from") Integer from, @QueryParam("to") Integer to, @Context SecurityContext sc) {
         
-        if (!sc.isUserInRole("USER") || !sc.isUserInRole("ADMIN")) {
+        boolean esUser = sc.isUserInRole("USER");
+        boolean esAdmin = sc.isUserInRole("ADMIN");
+        if (!esUser && !esAdmin) {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
         
@@ -177,7 +180,7 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
             return newError(BAD_REQUEST, "Null filter", null, "Please, insert filter first").build();
         }
         
-        if (from < 1 || to < 1 || from > to) {            
+        if (from < 0 || to < 0 || from > to) {            
             return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
         }
 
@@ -187,12 +190,11 @@ public class SerieFacadeREST extends AbstractFacade<Serie> {
             q.setFirstResult(from);
         }
 
-        if (from > 0 && to > 0) {
-            q.setMaxResults(Math.abs(from - to));
-        } else {
-            q.setMaxResults(25);
-        }
-
+        int limit = to - from + 1;
+        if (limit > 100) limit = 100;
+        
+        q.setMaxResults(limit);
+        
         q.setParameter("title", "%" + title + "%");
         return ResponseFactory.newList(q.getResultList()).build();
     }

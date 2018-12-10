@@ -28,7 +28,7 @@ const styles = theme => ({
     },
     menu: {
         width: 200,
-    },panel: {
+    }, panel: {
         marginLeft: theme.spacing.unit * 2,
     }
 });
@@ -49,13 +49,20 @@ class SearchSketch extends React.Component {
 
     handleSearch = async () => {
         let sketches = [];
-        let { title, from, to } = this.state;
-
-        from = new Date(from);
-        to   = new Date(to);
+        let { from, to } = this.state;
 
         try {
-            let resp = await Axios.get(`${SKETCHES}/search?${title}&from=${from}&to=${to}`, { headers: { 'Authorization': localStorage.getItem("session-token") } });
+            from = new Date(from).toISOString().slice(0, 10);
+            to = new Date(to).toISOString().slice(0, 10);
+        } catch (err) {
+            alert('Set valid dates');
+            return;
+        }
+
+        console.log(from);
+        console.log(to);
+        try {
+            let resp = await Axios.get(`${SKETCHES}/betweendates?from=${from}&to=${to}`, { headers: { 'Authorization': localStorage.getItem("session-token") } });
             console.log(resp.data);
             resp = resp.data;
             if (resp.ok) {
@@ -64,7 +71,8 @@ class SearchSketch extends React.Component {
                 alert('sketches err');
             }
         } catch (err) {
-            alert(JSON.stringify(err.response.data.error.cause));
+            console.log(err.response.data);
+            alert(JSON.stringify(err));
         }
 
         this.setState({
@@ -84,7 +92,7 @@ class SearchSketch extends React.Component {
         console.log(JSON.stringify(this.state.serieResults));
         let { classes } = this.props;
         return (
-            <div className={classes.panel}>
+            <div>
                 <Grid
                     container
                     direction="column"
@@ -128,7 +136,7 @@ class SearchSketch extends React.Component {
                         alignItems="flex-start"
                     >
                         <Typography variant='h3' component='h3'>Results</Typography>
-                        {this.state.sketchResults.length > 0 ? <GridSketch currentUser={this.props.currentUser} series={this.state.sketchResults} /> : <Typography variant='h5' >There are no results</Typography>}
+                        {this.state.sketchResults.length > 0 ? <GridSketch currentUser={this.props.currentUser} sketches={this.state.sketchResults} /> : <Typography variant='h5' >There are no results</Typography>}
                     </Grid>
                 </Grid>
 

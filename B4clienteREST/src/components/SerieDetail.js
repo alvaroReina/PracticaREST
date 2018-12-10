@@ -7,7 +7,7 @@ import { Route, Link } from 'react-router-dom'
 import { Button, Typography, Grid } from '@material-ui/core';
 import SketchesList from './SketchesList'
 import SketchNew from "./SketchNew";
-import SketchEdit from "./SketchEdit";
+// import SketchEdit from "./SketchEdit";
 
 import { isAllowed } from '../utils/validator';
 
@@ -50,7 +50,9 @@ export default class SerieDetail extends Component {
                 {!this.state.loading &&
                     <div>
                         <Route path="/series/:id/sketches/new" render={(props) => <SketchNew currentUser={this.props.currentUser} logged={this.props.logged} {...props}/>}/>
-                        <Route path="/series/:id/edit/:sketchId" render={(props) => <SketchEdit currentUser={this.props.currentUser} logged={this.props.logged} sketch={this.state.selectedSketch}/>}/>
+                        {
+                        // <Route path="/series/:id/edit/:sketchId" render={(props) => <SketchEdit currentUser={this.props.currentUser} logged={this.props.logged} sketch={this.state.selectedSketch}/>}/>
+                        }
                         <Route path="/series/:id/edit" render={(props) => <SerieEdit serie={this.state.serie} updateSerie={this.props.updateSerie} currentUser={this.props.currentUser} {...props} />} />
                         <Route exact path="/series/:id" render={(props) => {
                             return (<Grid>

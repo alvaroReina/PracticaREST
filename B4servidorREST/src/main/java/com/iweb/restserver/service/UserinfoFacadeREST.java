@@ -11,7 +11,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.iweb.restserver.entity.Userinfo;
 import com.iweb.restserver.exceptions.ValidationException;
-import com.iweb.restserver.response.ErrorAttribute;
 import com.iweb.restserver.response.RestResponse;
 import com.iweb.restserver.security.RequireAuthentication;
 import com.iweb.restserver.security.SignaturePolicy;
