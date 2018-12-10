@@ -37,12 +37,14 @@ const styles = theme => ({
     }
   });
   
-  class SketchNew extends Component {
+  class SketchEdit extends Component {
   
     constructor(props) {
       super(props)
       this.state = {
-        title: "",
+        title: this.props.sketch.title,
+        createdat: new Date(this.props.sketch.createdat).toISOString().slice(0, 10),
+        score: this.props.sketch.score,
         redirect: false,
       }
   
@@ -55,11 +57,12 @@ const styles = theme => ({
     }
   
     validate = () => {
-      let {title} = this.state;
+      let {title, score} = this.state;
   
       let okTitle = title && title.trim().length > 0;
+      let okScore = !isNaN(Number.parseFloat(score));
   
-      return (okTitle);
+      return (okTitle && okScore);
     }
   
     handleChange = name => event => {
@@ -74,11 +77,12 @@ const styles = theme => ({
         this.notify('verify all the data before submit')
         return;
       }
-  
       try {
-        let resp = await Axios.post(SKETCHES, {title,createdat, score, idserie: {id: this.props.match.params.id}}, {headers: {'Authorization': localStorage.getItem("session-token")}});
+        let sketch = {id: this.props.sketch.id, title,createdat: new Date(createdat), score, idserie: {id: this.props.serieId}}
+        let resp = await Axios.put(`${SKETCHES}/${this.props.sketch.id}`, sketch , {headers: {'Authorization': localStorage.getItem("session-token")}});
         resp = resp.data;
         if (resp.ok) {
+          this.props.updateSketch(sketch)
           this.setState({redirect: true})
         } else {
           this.notify(`Oops: ${JSON.stringify(resp.error)}`)
@@ -87,7 +91,7 @@ const styles = theme => ({
         console.log(err);
         this.notify("Something went wrong")
       }
-      this.props.loadSketches()
+      this.props.close()
     }
   
     notify = (msg) => {
@@ -99,11 +103,9 @@ const styles = theme => ({
       let valid = this.validate();
       return (
         <div>
-          {!this.props.logged && <Redirect to="/" />}
-          {this.state.redirect && <Redirect to={`/series/${this.props.match.params.id}`}/>}
           <form className={classes.container} noValidate autoComplete="off">
             <Grid container direction="row" justify="center">
-              <Typography variant="h3" className={classes.middleElem}>Create a new Sketch</Typography></Grid>
+              <Typography variant="h3" className={classes.middleElem}>Update sketch</Typography></Grid>
             <Grid
               container
               direction="row"
@@ -115,8 +117,33 @@ const styles = theme => ({
                 id="title"
                 label="Title"
                 className={classes.textField}
+                value={this.state.title}
                 onChange={this.handleChange('title')}
                 onBlur={this.validate}
+                margin="normal"
+              />
+              <TextField
+                id="score"
+                label="Score"
+                className={classes.textField}
+                type="number"
+                value={this.state.score}
+                onChange={this.handleChange('score')}
+                onBlur={this.validate}
+                margin="normal"
+              />
+              <TextField
+                id="createdat"
+                label="Created at"
+                type="date"
+                className={classes.textField}
+                format="DD/MM/YYYY"
+                value={this.state.createdat}
+                onChange={this.handleChange('createdat')}
+                onBlur={this.validate}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 margin="normal"
               />
             </Grid>
@@ -131,7 +158,7 @@ const styles = theme => ({
              
               { valid && 
                 <Button variant='contained' color='primary' onClick={this.handleSubmit} className={classes.grow}>
-                  Create sketch
+                  Update
                   </Button>}
               {!valid && 
                 <Button variant='outlined' color='secondary' className={classes.grow} disabled={!valid}>
@@ -144,4 +171,4 @@ const styles = theme => ({
     }
   }
 
-export default withStyles(styles)(SketchNew);
+export default withStyles(styles)(SketchEdit);

@@ -28,7 +28,7 @@ class App extends Component {
     this.logout = this.logout.bind(this)   
   }
 
-  async componentDidMount(){
+  componentDidMount(){
     let sessionToken = localStorage.getItem("session-token");
     let storedUser   = localStorage.getItem("userinfo");
     if (sessionToken && storedUser){
@@ -38,7 +38,10 @@ class App extends Component {
       localStorage.removeItem("session-token");
       localStorage.removeItem("userinfo");
     }
+    this.loadSeries()
+  }
 
+  loadSeries = async () => {
     let response = await Axios.get(SERIES)
     let series = [];
     if (response.data.ok)
@@ -118,7 +121,7 @@ class App extends Component {
          <div>
             <NavBar user={this.state.user} logged={this.state.logged} login={this.login} logout={this.logout} />  
             <Switch>
-              <Route path="/series/new" render={() => <SerieNew currentUser={this.state.user} logged={this.state.logged}/>}/>
+              <Route path="/series/new" render={() => <SerieNew loadSeries={this.loadSeries} currentUser={this.state.user} logged={this.state.logged}/>}/>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
               <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
             </Switch>

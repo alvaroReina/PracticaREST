@@ -2,7 +2,10 @@ import React, { Component } from 'react'
 import Axios from 'axios'
 import { SERIES, SKETCHES } from '../services/cte'
 import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core'
-import { Link } from 'react-router-dom'
+import Popup from "reactjs-popup";
+import SketchEdit from './SketchEdit'
+import SketchNew from './SketchNew'
+import { Route } from 'react-router-dom'
 
 export default class SketchesList extends Component {
 
@@ -14,8 +17,11 @@ export default class SketchesList extends Component {
         }
     }
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.loadSketches()
+    }
 
+    loadSketches = async () => {
         let sketches = [];
         try {
             let response = await Axios.get(`${SERIES}/${this.props.serie.id}/sketches`)
@@ -38,7 +44,6 @@ export default class SketchesList extends Component {
             resp = resp.data;
             if (resp.ok) {
                 this.setState({ sketches: this.state.sketches.filter(s => s.id !== id) });
-                alert('sketch deleted!');
             } else {
                 alert('something went wrong');
             }
@@ -47,10 +52,19 @@ export default class SketchesList extends Component {
             console.log(err);
         }
     }
+    updateSketch = (sketch) => {
+        let sketches = this.state.sketches
+        let i = sketches.findIndex((s) => s.id === sketch.id)
+        if(i >= 0) {
+          sketches[i] = sketch
+        }
+        this.setState({sketches})
+      }
 
     render() {
         return (
             <div>
+                <Route path="/series/:id/sketches/new" render={(props) => <SketchNew loadSketches={this.loadSketches} logged={this.props.isOwner} {...props}/>}/>
                 {!this.state.loading && <div>
                     <Typography align="center" variant="h4">
                         Sketches
@@ -79,7 +93,7 @@ export default class SketchesList extends Component {
 
                                             </TableCell>}
                                             {this.props.isOwner && <TableCell>                                                
-                                                <Button variant='contained' color='primary' component={Link} to={`/series/${this.props.serie.id}/edit/${s.id}`}>EDIT</Button>
+                                                <Popup modal trigger={<Button variant="contained" color="primary">EDIT</Button>}>{close => <SketchEdit updateSketch={this.updateSketch} serieId={this.props.serie.id} sketch={s} close={close}/>}</Popup>
                                                 <Button variant='contained' color='secondary' onClick={() => { this.deleteSketch(s.id) }}>DELETE</Button>
                                             </TableCell>}
                                         </TableRow>
