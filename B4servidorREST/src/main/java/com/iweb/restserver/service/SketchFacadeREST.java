@@ -29,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static com.iweb.restserver.response.ResponseFactory.*;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -99,11 +100,14 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         if (id == null) {
             return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
-        super.remove(super.find(id));
-        resp.isSuccessful(true)
-                .withStatus(Response.Status.OK);
 
-        return resp.build();
+        Sketch e = super.find(id);
+        if (e == null) {
+            return ResponseFactory.newError(Response.Status.NOT_FOUND, "Sketch not found").build();
+        }
+
+        super.remove(e);
+        return ResponseFactory.newSingleEntity(e, "sketch").build();
     }
 
     @GET
@@ -141,6 +145,11 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         if (from == null || to == null) {
             return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }
+
+        if (from < 1 || to < 1 || from > to) {
+            return newError(BAD_REQUEST, "Bad filter", null, "Please, insert valid filter first").build();
+        }
+
         super.findRange(new int[]{from, to});
         resp.isSuccessful(true)
                 .withStatus(Response.Status.OK);
@@ -186,9 +195,12 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @Path("betweendates")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @RequireAuthentication
     public Response findBetweenDates(@QueryParam("from") String from, @QueryParam("to") String to, @Context SecurityContext sc) {
-        
-        if (!sc.isUserInRole("USER") || !sc.isUserInRole("ADMIN")) {
+
+        boolean esUser = sc.isUserInRole("USER");
+        boolean esAdmin = sc.isUserInRole("ADMIN");
+        if (!esUser && !esAdmin) {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
         
@@ -197,8 +209,8 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         }
 
         Query q = em.createQuery("SELECT s FROM Sketch s WHERE s.createdat BETWEEN :from AND :to ORDER BY s.createdat DESC");
-        q.setParameter("from", from);
-        q.setParameter("to", to);
+        q.setParameter("from", Date.valueOf(from));
+        q.setParameter("to", Date.valueOf(to));
 
         return ResponseFactory.newList(q.getResultList()).build();
     }

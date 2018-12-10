@@ -6,6 +6,8 @@ import Axios from 'axios';
 import { SIGNIN, SERIES } from './services/cte'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SerieNew from './components/SerieNew';
+import SearchSerie from './components/SearchSerie'
+import SearchSketch from './components/SearchSketch'
 
 
 const placeholderUser = {
@@ -123,7 +125,9 @@ class App extends Component {
             <Switch>
               <Route path="/series/new" render={() => <SerieNew loadSeries={this.loadSeries} currentUser={this.state.user} logged={this.state.logged}/>}/>
               <Route exact path="/(series|)" render={() => <GridSeries series={this.state.series} currentUser={this.state.user}/>}/>
+              <Route path="/series/search" render={(props) => <SearchSerie currentUser={this.state.user} />} />
               <Route path="/series/:id" render={(props) => <SerieDetail updateSerie={this.updateSerie} currentUser={this.state.user} logged={this.state.logged} {...props}/>}/>
+              <Route path="/sketches/search" render={(props) => <SearchSketch currentUser={this.state.user} />} />
             </Switch>
           </div>
         </Router>

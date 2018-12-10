@@ -39,7 +39,7 @@ function GridSeries(props) {
             <div className={classes.root} id="grid-series">
             <GridList cellHeight={350} className={classes.gridList} cols={ncols}>
                 <GridListTile key='Subheader' cols={ncols} style={{ height: classes.subHeader.height }}>
-                    <ListSubheader component='div' className={classes.subHeader}>All series</ListSubheader>
+                    <ListSubheader component='div' className={classes.subHeader}>Series</ListSubheader>
                 </GridListTile>
                 {series.map(serie => (
                     <GridListTile key={serie.id}>
