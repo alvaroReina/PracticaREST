@@ -5,8 +5,8 @@
  */
 package com.iweb.restserver.service;
 
+import com.iweb.restserver.entity.Serie;
 import com.iweb.restserver.entity.Sketch;
-import com.iweb.restserver.response.ErrorAttribute;
 import com.iweb.restserver.response.ResponseFactory;
 import static com.iweb.restserver.response.ResponseFactory.newError;
 import com.iweb.restserver.response.RestResponse;
@@ -72,17 +72,29 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @RequireAuthentication
     public Response edit(@PathParam("id") Integer id, Sketch entity, @Context SecurityContext sc) {
 
         RestResponse resp = new RestResponse(true);
 
-        if (!sc.isUserInRole("ADMIN") && !sc.getUserPrincipal().getName().equals(entity.getIdserie().getAuthor().getEmail())) {
+        boolean esAdmin = sc.isUserInRole("ADMIN");
+        
+        boolean esAutor = false;
+        Serie s;
+        try{
+            s = em.find( Serie.class,entity.getIdserie().getId());
+            esAutor = sc.getUserPrincipal().getName().equals(s.getAuthor().getEmail());
+        } catch(Exception e ) {
+           return ResponseFactory.newError(Response.Status.NOT_FOUND, "no such serie for that sketch").build();
+        }
+        if (!esAdmin && !esAutor) {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
 
         if (id == null) {
             return newError(BAD_REQUEST, "ID not present", null, "Please, insert ID first").build();
         }
+        
         super.edit(entity);
         resp.isSuccessful(true)
                 .withStatus(Response.Status.OK);
@@ -203,7 +215,7 @@ public class SketchFacadeREST extends AbstractFacade<Sketch> {
         if (!esUser && !esAdmin) {
             return ResponseFactory.newError(Response.Status.FORBIDDEN, "you cannot access to this resource").build();
         }
-        
+
         if (from == null || to == null) {
             return newError(BAD_REQUEST, "Range not present", null, "Please, insert range first").build();
         }

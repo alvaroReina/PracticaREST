@@ -57,7 +57,7 @@ public class Serie implements Serializable {
     @Size(min = 1, max = 256)
     private String picture;
     @JoinColumn(name = "AUTHOR", referencedColumnName = "ID")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Userinfo author;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idserie", fetch = FetchType.LAZY)
     //@JsonManagedReference

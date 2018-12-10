@@ -158,7 +158,7 @@ public class Userinfo implements Serializable, Principal{
 
     @Override
     public String getName() {
-        return this.fullname;
+        return this.email;
     }
     
 }

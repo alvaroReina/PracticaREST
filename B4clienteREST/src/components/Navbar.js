@@ -71,7 +71,9 @@ class NavBar extends React.Component {
                         <Typography className={classes.title} component={Link} style={{ textDecoration: 'none' }} to="/" variant="h6" color="inherit" noWrap>
                             Comic manager
                         </Typography>
-                        <Search />
+                        {
+                         // <Search />
+                        }
                         {logged && <Button
                             className={classes.toolButton}
                             component={Link} to="/series/search"
