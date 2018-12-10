@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import Axios from 'axios'
 import { SERIES, SKETCHES } from '../services/cte'
 import { Paper, TableCell, Table, TableHead, TableRow, TableBody, Typography, Button } from '@material-ui/core'
-import { Link } from 'react-router-dom'
+import Popup from "reactjs-popup";
+import SketchEdit from './SketchEdit'
 
 export default class SketchesList extends Component {
 
@@ -79,7 +80,7 @@ export default class SketchesList extends Component {
 
                                             </TableCell>}
                                             {this.props.isOwner && <TableCell>                                                
-                                                <Button variant='contained' color='primary' component={Link} to={`/series/${this.props.serie.id}/edit/${s.id}`}>EDIT</Button>
+                                                <Popup modal trigger={<Button variant="contained" color="primary">EDIT</Button>}><div><SketchEdit serieId={this.props.serie.id} sketch={s}/></div></Popup>
                                                 <Button variant='contained' color='secondary' onClick={() => { this.deleteSketch(s.id) }}>DELETE</Button>
                                             </TableCell>}
                                         </TableRow>
