@@ -74,6 +74,16 @@ class NavBar extends React.Component {
                         <Search />
                         {logged && <Button
                             className={classes.toolButton}
+                            component={Link} to="/series/search"
+                            variant='contained' color='secondary'
+                        >Search Series</Button>}
+                        {logged && <Button
+                            className={classes.toolButton}
+                            component={Link} to="/sketches/search"
+                            variant='contained' color='secondary'
+                        >Search Sketches</Button>}
+                        {logged && <Button
+                            className={classes.toolButton}
                             component={Link} to="/series/new"
                             variant='contained' color='secondary'
                         >Create Serie</Button>}
